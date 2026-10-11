@@ -4,17 +4,15 @@
 
 | 数字冲击 | 收敛归类 | 前后对比（真实比例） | 金句（满版深底） |
 |---|---|---|---|
-| ![](demo/01-7000.gif) | ![](demo/03-converge.gif) | ![](demo/04-compare.gif) | ![](demo/06-quote.gif) |
+| ![](demo/number.gif) | ![](demo/converge.gif) | ![](demo/compare.gif) | ![](demo/quote.gif) |
 
-> GIF 已压缩；成片是 30fps H.264，不带音轨（声音统一在剪辑台处理）。demo 文案全部来自同一段测试逐字稿（“很多人以为做知识库就是把笔记堆进去…”）。
+> GIF 已压缩（为了体积关掉了纸纹呼吸和慢推镜）；成片是 30fps H.264，不带音轨（声音统一在剪辑台处理）。
 
-一条视频的 6 个末帧（暂停即海报）：
+一段 1 分钟的口播 → 10 条信息动画，10 个模板各用一次（末帧，暂停即海报）：
 
-![](demo/demo-end-frames.jpg)
+![](demo/sheet.jpg)
 
-10 个模板：
-
-![](demo/templates.jpg)
+文案来自一段**虚构的示例逐字稿**：[examples/demo-script.md](examples/demo-script.md)（含分镜表和配套字幕）。屏幕上的每个字都摘自原话。
 
 ## 风格
 
@@ -50,17 +48,17 @@ git clone <本仓库> ~/.claude/skills/eian-riso-broll
 对 Claude 说：
 
 - 「用 eian-riso-broll 给这期逐字稿做信息动画：……」→ 选段表 → 样帧 → 成片
-- 「把这句做成 Riso 动画，直接出片：『以前找一条素材要 8 分钟，现在 30 秒』」
+- 「把这句做成 Riso 动画，直接出片：『做一张信息图，以前要 40 分钟，现在 2 分钟』」
 
 手动：
 
 ```bash
-P=$(scripts/new_project.sh 2026-10-07-知识库)
-cp templates/number.html $P/compositions/01-7000.html     # 改 DATA
+P=$(scripts/new_project.sh 2026-10-07-第12期)
+cp templates/number.html $P/compositions/01-number.html   # 改 DATA
 node scripts/render.mjs $P/compositions/*.html --still      # 样帧 + contact sheet
 node scripts/qa.mjs     $P/compositions/*.html              # 质检
 node scripts/render.mjs $P/compositions/*.html              # 成片
-node scripts/render.mjs $P/compositions/01-7000.html --alpha   # 透明底 ProRes 4444
+node scripts/render.mjs $P/compositions/01-number.html --alpha # 透明底 ProRes 4444
 ```
 
 浏览器直接打开任意 composition 即可预览（循环播放，`?t=end` 定格）。
@@ -90,6 +88,8 @@ scripts/
 └── lib/chrome.mjs       headless Chrome 驱动（Node 自带 WebSocket）
 tests/smoke.mjs          一键自测：全部模板 → 样帧 + 成片 + 质检 + 时长脚本
 evals/evals.json         行为评测
+examples/                示例逐字稿（虚构）+ 分镜表 + 字幕；模板默认 DATA 和 demo 都来自它
 tools/build_fonts.py     从上游开源字体生成 assets/fonts（维护者用）
+tools/build_demo.mjs     重新生成 demo/（维护者用）
 demo/                    GIF 与末帧一览
 ```

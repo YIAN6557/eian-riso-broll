@@ -1,6 +1,6 @@
 <!doctype html>
 <!-- 模板 · number · 数字冲击
-     用于：台词里有一个能扛住整帧的数字（7000 条、90%、3 年）。
+     用于：台词里有一个能扛住整帧的数字（12 处、90%、3 年）。
      画面：超大数字（B 墨，网点显影 + 计数）→ 单位盖章叠印在数字脚上 → 一到两行论点升起 → 重点词荧光压条。
      只改 DATA；版面会按字数自动缩放。 -->
 <html lang="zh-CN"><head><meta charset="utf-8">
@@ -26,13 +26,13 @@
 <script>
 const DATA = {
   palette:  'pal-blue',
-  mast:     ['01 · 知识库', '01 / 06'],   // 左：段号 · 主题词；右：序号
-  number:   7000,                          // 只用逐字稿里出现的数字
+  mast:     ['03 · 信息量', '03 / 10'],   // 左：段号 · 主题词；右：序号
+  number:   12,                            // 只用逐字稿里出现的数字
   prefix:   '',  suffix: '',               // 比如 suffix: '%'
   comma:    false,                         // ≥10000 时建议 true
-  unit:     '条笔记',                       // ≤ 4 字
-  say:      '直接丢给 AI\n它根本[消化不了]', // ≤ 2 行，每行 ≤ 8 字；[ ] = 荧光压条
-  duration: 4.5,
+  unit:     '处信息',                       // ≤ 4 字
+  say:      '值得配[画面]',                 // ≤ 2 行，每行 ≤ 8 字；[ ] = 荧光压条
+  duration: 5.5,
 };
 
 document.body.className = DATA.palette;
@@ -51,6 +51,7 @@ Riso.comp({ duration: DATA.duration, seed: 11 }, C => {
   let u = Riso.inkBox(unit);
   unit.style.top = unit.offsetTop + (numInk.bottom - (u.bottom - u.top) * .42 - u.top) + 'px';   // 单位压住数字脚 → 叠印出第三色
   u = Riso.inkBox(unit);
+  if (u.bottom > 880) { unit.style.right = '160px'; u = Riso.inkBox(unit); }   // 数字很高时单位会落进右侧按钮栏（y>880），收到 x 920 以内
 
   Riso.text(say, DATA.say);
   Riso.fit(say, { width: 936, max: 112, min: 72 });

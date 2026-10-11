@@ -1,6 +1,6 @@
 <!doctype html>
 <!-- 模板 · compare · 前后对比（同一单位的两个量）
-     用于：以前 X → 现在 Y（8 分钟 → 30 秒；3 天 → 2 小时；100 次 → 7 次）。
+     用于：以前 X → 现在 Y（40 分钟 → 2 分钟；3 天 → 2 小时；100 次 → 7 次）。
      画面：两根条按真实比例画 —— “以前”那根慢慢长满（时间在流逝），“现在”那根一下就到。
      动效本身就是论点：慢 vs 快，看一眼就懂。比例必须真实（同一单位换算后再算长度）。 -->
 <html lang="zh-CN"><head><meta charset="utf-8">
@@ -30,11 +30,11 @@
 <script>
 const DATA = {
   palette:  'pal-blue',
-  mast:     ['04 · 效率', '04 / 06'],
-  title:    '找一条素材',                       // 比较的是什么（≤ 8 字）
-  before:   { label: '以前', value: 8,  unit: '分钟', base: 480 },   // base = 换算成同一单位（秒）
-  after:    { label: '现在', value: 30, unit: '秒',   base: 30 },
-  duration: 5,
+  mast:     ['04 · 效率', '04 / 10'],
+  title:    '做一张信息图',                     // 比较的是什么（≤ 8 字）
+  before:   { label: '以前', value: 40, unit: '分钟', base: 2400 },   // base = 换算成同一单位（秒）
+  after:    { label: '现在', value: 2,  unit: '分钟', base: 120 },
+  duration: 4.5,
 };
 
 document.body.className = DATA.palette;

@@ -6,7 +6,7 @@
 
      Riso.comp({ duration: 4.5, seed: 3 }, C => {
        C.camera();                       // 慢推镜
-       C.count('#n', .2, { to: 7000 });  // 计数
+       C.count('#n', .2, { to: 1800 });  // 计数
        C.stamp('#u', .9);                // 盖章落位
      });
 
@@ -17,6 +17,7 @@
 
   const Q = new URLSearchParams(location.search);
   const RENDER = Q.has('render');
+  const CALM = Q.has('calm');          // 静止纸纹、不推镜：只给压 GIF 用（每帧整屏都变的话 GIF 压不下去）
   if (Q.has('alpha')) document.documentElement.classList.add('alpha');
 
   /* 可复现随机：同一个 seed 永远同一个结果 */
@@ -34,7 +35,7 @@
   const fmtThousands = v => Math.round(v).toLocaleString('en-US');
 
   /* ── 文本：逐字拆分 + [重点] 标记 ──────────────────────────
-     Riso.text(el, '直接丢给 AI\n它根本[消化不了]')
+     Riso.text(el, '画面要跟着\n[你说的话]走')
      → 每行一个 .ln（溢出裁切，用于升起），每字一个 .ch，[ ] 内的字带 .em */
   function text(el, str) {
     el = els(el)[0];
@@ -140,12 +141,14 @@
 
     /* 慢推镜：整条匀速推进。B-roll 会被剪在任意一帧切入，匀速比缓入缓出更自然 */
     C.camera = ({ push = 0.03, drift = 0 } = {}) => {
+      if (CALM) return C;
       C.tl.fromTo(stage, { scale: 1, y: 0 }, { scale: 1 + push, y: drift, duration: C.duration, ease: 'none' }, 0);
       return C;
     };
 
     /* 油墨呼吸：质感层逐两帧换位（12–15fps 的颗粒闪烁，静止段也是活的） */
     C.boil = () => {
+      if (CALM) return C;
       const press = frame.querySelector('.press');
       C.at(t => {
         const k = Math.floor(t * C.fps / 2), r = rng(k * 7919 + 17);

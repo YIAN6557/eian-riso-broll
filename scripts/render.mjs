@@ -5,7 +5,7 @@
 //   node render.mjs compositions/*.html --still              → plates/<id>.png（末帧海报）+ plates/sheet.jpg
 //   node render.mjs x.html --at 1.2                          → plates/<id>@1.2.png（任意时刻）
 //   node render.mjs x.html --alpha                           → renders/<id>.mov（ProRes 4444 透明底，叠在口播上用）
-//   选项：--draft（快速低码率）  -o <输出路径>（只渲一条时可用）
+//   选项：--draft（快速低码率）  --calm（纸纹不动、不推镜，只给压 GIF 用）  -o <输出路径>（只渲一条时可用）
 import { spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { resolve, dirname, basename, join } from 'node:path';
@@ -15,7 +15,7 @@ import { launch } from './lib/chrome.mjs';
 const args = process.argv.slice(2);
 const has = f => { const i = args.indexOf(f); if (i < 0) return false; args.splice(i, 1); return true; };
 const val = f => { const i = args.indexOf(f); if (i < 0) return null; const v = args[i + 1]; args.splice(i, 2); return v; };
-const STILL = has('--still'), ALPHA = has('--alpha'), DRAFT = has('--draft');
+const STILL = has('--still'), ALPHA = has('--alpha'), DRAFT = has('--draft'), CALM = has('--calm');
 const AT = val('--at'), OUT = val('-o');
 const files = args.map(f => resolve(f));
 if (!files.length) { console.error('用法: render.mjs <composition.html> [...] [--still|--at t|--alpha|--draft] [-o out]'); process.exit(2); }
@@ -33,7 +33,7 @@ const stills = [];
 try {
   for (const file of files) {
     const t0 = Date.now();
-    const page = await chrome.open(file, { query: '?render' + (ALPHA ? '&alpha' : ''), alpha: ALPHA });
+    const page = await chrome.open(file, { query: '?render' + (ALPHA ? '&alpha' : '') + (CALM ? '&calm' : ''), alpha: ALPHA });
     const m = await page.meta();
     const proj = projectOf(file);
 

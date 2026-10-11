@@ -28,6 +28,7 @@ node $S/render.mjs compositions/*.html --still     # 末帧样帧 → plates/<id
 node $S/render.mjs compositions/03-x.html --at 1.2 # 任意时刻（查动画中间态）
 node $S/render.mjs compositions/*.html             # 成片 → renders/<id>.mp4
 node $S/render.mjs compositions/*.html --draft     # 快速低码率预览
+node $S/render.mjs compositions/*.html --calm      # 纸纹不动、不推镜：只给压 GIF 用，别交付
 node $S/render.mjs compositions/01-x.html --alpha  # 透明底 → renders/<id>.mov（ProRes 4444）
 node $S/qa.mjs compositions/*.html                 # 质检 → qa/<id>-audit.png，error 时退出码 1
 node $S/timing.mjs --srt 口播.srt "某句台词"         # 精确入点 / 出点 / 建议时长

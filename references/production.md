@@ -2,15 +2,15 @@
 
 ## 环境
 
-`scripts/check_setup.sh` 一次查完：Node ≥ 22（渲染器用 Node 自带的 WebSocket 驱动 Chrome，**零 npm 依赖**）、Chrome/Chromium（会真的启动一次；找不到时设 `CHROME=<路径>`，也会自动找 Playwright 下载的 Chromium）、ffmpeg/ffprobe、字体。
+`scripts/check_setup.sh` 一次查完：Node ≥ 22（渲染器用 Node 自带的 WebSocket 驱动 Chrome，**零 npm 依赖**）、Chrome/Chromium（会真的启动一次；找不到时设 `CHROME=<路径>`，也会自动找 Playwright 下载的 Chromium）、ffmpeg/ffprobe、字体文件。
 
-非 macOS：没有宋体 Black / DIN Condensed 时会回退到 Noto Serif SC / Oswald，能渲但气质会变——装思源宋体 Heavy 和 Oswald 最接近。
+字体随 skill 分发（`assets/fonts/`，见那里的 README），不依赖系统字体，所以 macOS / Linux / Windows 渲出来一样。字体没加载上时页面会报错、渲染中止，不会悄悄换成系统字体出片。
 
 ## 项目结构
 
 ```
 <项目>/                          scripts/new_project.sh <名字> 生成；默认在 ~/eian-riso-broll-projects/
-├── assets/                     riso.css / riso.js / gsap —— 整份拷入，项目自包含
+├── assets/                     riso.css / riso.js / gsap / fonts —— 整份拷入，项目自包含
 │   └── shots/                  真截图放这里
 ├── compositions/NN-名字.html    每条一个，从 templates/ 复制
 ├── plates/                     样帧 PNG + sheet.jpg

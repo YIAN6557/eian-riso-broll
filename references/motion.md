@@ -68,7 +68,7 @@ Riso.comp({ duration: 4.5, seed: 11 }, C => {
 
 - 不用 `setTimeout` / `requestAnimationFrame` / `Date.now()` / `Math.random()` 驱动画面。随机用 `C.rand()`（按 seed 可复现）。
 - 计数器、画布、任何“随时间变”的东西放进 `C.at(t => …)`。
-- 不发网络请求：字体用系统字体，GSAP 在 `assets/` 里，截图放项目 `assets/shots/`。
+- 不发网络请求：字体在 `assets/fonts/`，GSAP 在 `assets/` 里，截图放项目 `assets/shots/`。
 
 
 ## 写新模板

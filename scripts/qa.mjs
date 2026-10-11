@@ -14,7 +14,7 @@ const projectOf = f => basename(dirname(f)) === 'compositions' ? dirname(dirname
 
 const OVERLAY = issues => `(() => {
   const o = document.createElement('div'); o.id = '__qa';
-  o.style.cssText = 'position:fixed;inset:0;z-index:9999;pointer-events:none;font:600 22px Menlo,monospace';
+  o.style.cssText = 'position:fixed;inset:0;z-index:9999;pointer-events:none;font:600 22px monospace';
   const box = (x, y, w, h, css) => { const d = document.createElement('div'); d.style.cssText = 'position:absolute;left:'+x+'px;top:'+y+'px;width:'+w+'px;height:'+h+'px;'+css; o.appendChild(d); return d; };
   box(0, 0, 1080, 168, 'background:rgba(255,0,0,.10)');
   box(0, 1330, 1080, 590, 'background:repeating-linear-gradient(45deg,rgba(0,0,0,.10) 0 12px,transparent 12px 24px)');

@@ -21,10 +21,8 @@ else bad "Chrome 不可用（可用环境变量 CHROME=<路径> 指定）："; e
 command -v ffmpeg  >/dev/null && ok "ffmpeg $(ffmpeg -version | head -1 | awk '{print $3}')" || bad "没有 ffmpeg"
 command -v ffprobe >/dev/null && ok "ffprobe" || bad "没有 ffprobe"
 
-# 字体：macOS 自带宋体 Black / DIN Condensed；其他系统会回退到 Noto Serif SC / Oswald（风格会变，需自行安装）
-F=/System/Library/Fonts/Supplemental
-[ -f "$F/Songti.ttc" ] && ok "宋体 Songti SC（标题）" || warn "没有 Songti SC：标题会回退到 Noto Serif SC（请安装思源宋体 Heavy）"
-[ -f "$F/DIN Condensed Bold.ttf" ] && ok "DIN Condensed（数字）" || warn "没有 DIN Condensed：数字会回退到 Oswald / Helvetica"
+# 字体随 skill 分发（assets/fonts/），不依赖系统字体
+for f in riso-serif riso-sans riso-num riso-mono; do [ -f "$SKILL/assets/fonts/$f.woff2" ] && ok "字体 $f" || bad "缺 assets/fonts/$f.woff2"; done
 
 for f in riso.css riso.js gsap.min.js; do [ -f "$SKILL/assets/$f" ] && ok "assets/$f" || bad "缺 assets/$f"; done
 

@@ -15,10 +15,12 @@
   /* 套印错位：B 版相对 A 版的偏移。动效 register() 会让它从大偏移“咔”地归位到这里 */
   --rx: 3px; --ry: -2px;
 
-  --serif: "Songti SC", "STSongti-SC-Black", "Noto Serif SC", serif;   /* 标题：宋体 Black */
-  --sans:  "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", sans-serif;
-  --num:   "DIN Condensed", "DIN Alternate", "Oswald", "Helvetica Neue", sans-serif;
-  --mono:  "Menlo", "SF Mono", monospace;
+  /* 字体全部随 skill 分发（assets/fonts/，见下方 @font-face）：任何系统渲出来都一样。
+     中文只含 GB2312 常用字，生僻字才会落到后面的系统字体 */
+  --serif: "Riso Serif", "Songti SC", "Noto Serif SC", serif;               /* 标题：思源宋体 Heavy */
+  --sans:  "Riso Sans", "PingFang SC", "Noto Sans SC", sans-serif;          /* 标签：思源黑体 SemiBold */
+  --num:   "Riso Num", "Riso Sans", sans-serif;                             /* 数字：Oswald Bold */
+  --mono:  "Riso Mono", "Riso Sans", monospace;                             /* 编号：JetBrains Mono（中文落到 Riso Sans）*/
 
   /* 安全区（QA 脚本读同一组数字，改这里要同步 scripts/qa.mjs） */
   --info-top: 168px;      /* 平台顶栏以下 */
@@ -26,9 +28,15 @@
   --gutter: 72px;
 }
 
+/* 每个字体只有一个字重；声明成整段字重范围，任何 font-weight 都用这一份，浏览器不会再合成假粗体 */
+@font-face{ font-family:"Riso Serif"; src:url("fonts/riso-serif.woff2") format("woff2"); font-weight:100 900; font-display:block }
+@font-face{ font-family:"Riso Sans";  src:url("fonts/riso-sans.woff2")  format("woff2"); font-weight:100 900; font-display:block }
+@font-face{ font-family:"Riso Num";   src:url("fonts/riso-num.woff2")   format("woff2"); font-weight:100 900; font-display:block }
+@font-face{ font-family:"Riso Mono";  src:url("fonts/riso-mono.woff2")  format("woff2"); font-weight:100 900; font-display:block }
+
 *{ box-sizing:border-box }
 html, body{ margin:0; width:1080px; height:1920px; overflow:hidden; background:var(--paper) }
-body{ color:var(--a); font-family:var(--sans); -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision }
+body{ color:var(--a); font-family:var(--sans); font-synthesis:none; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision }
 
 #frame{ position:relative; width:1080px; height:1920px; overflow:hidden; background:var(--paper) }
 #stage{ position:absolute; inset:0; transform-origin:50% 15%; background:var(--paper) }

@@ -49,13 +49,15 @@ y 1330–1920 字幕床：只放网点地层 / 太阳等装饰，绝不放字
 
 | 用途 | 字体 | class | 规则 |
 |---|---|---|---|
-| 标题、论点 | 宋体 Black（Songti SC 900） | `.hd` `.hd-xl/l/m/s` | 字距 -0.02em；不描边、不阴影 |
-| 数字 | DIN Condensed Bold | `.num` | 越大越好；按墨迹对齐（`Riso.inkBox`） |
-| 标签、引子 | 苹方 Semibold | `.lb` | 42px 左右 |
-| 编号、版头 | Menlo | `.mono` | 28px、字距 0.16em；只放编号 / 段号，不放句子 |
+| 标题、论点 | 思源宋体 Heavy（`Riso Serif`，900） | `.hd` `.hd-xl/l/m/s` | 字距 -0.02em；不描边、不阴影 |
+| 数字 | Oswald Bold（`Riso Num`） | `.num` | 越大越好；按墨迹对齐（`Riso.inkBox`） |
+| 标签、引子 | 思源黑体 SemiBold（`Riso Sans`） | `.lb` | 42px 左右 |
+| 编号、版头 | JetBrains Mono（`Riso Mono`） | `.mono` | 28px、字距 0.16em；只放编号 / 段号，不放句子 |
+
+字体全部在 `assets/fonts/`，随 skill 分发，不依赖系统字体。
 
 - 最小字号 28px（1080 宽的画面在手机上约缩到 36%）。
-- 宋体 Black 的横细竖粗在大字号下非常漂亮，小于 64px 时改用苹方。
+- 宋体的横细竖粗在大字号下非常漂亮，小于 64px 时改用黑体（`.lb`）。
 
 ## 禁止
 

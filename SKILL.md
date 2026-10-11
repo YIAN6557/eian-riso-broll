@@ -1,7 +1,7 @@
 ---
 name: eian-riso-broll
 description: 孔版双色（Riso）风格的信息 B-roll 动画。给一份口播逐字稿（可附 SRT 字幕），挑出适合做成信息动画的段落，套用 10 个现成模板（数字冲击 / 流程 / 收敛 / 前后对比 / 链接密度 / 金句 / 多选一 / 误区翻转 / 章节卡 / 截图锚点），先出静态样帧确认，再渲染 1080×1920 竖屏 mp4（无音轨；可出透明底 ProRes）。用户说「Riso 动画」「孔版风 B-roll」「eian-riso-broll」「逐字稿做信息动画」「口播配信息动画」「信息图 B-roll」，或给出逐字稿、想要高对比杂志感的竖屏信息动画时，使用此 skill。纯 HTML/CSS/GSAP 本机渲染，不调用图片生成模型；只做无角色的信息动画 —— 情绪独白、隐喻、软件操作演示不做，建议归实拍 / 角色动画 / 录屏。
-compatibility: Node ≥ 22、Chrome 或 Chromium、ffmpeg/ffprobe。macOS 自带字体效果最好（宋体 Songti SC Black + DIN Condensed）。首次使用先跑 scripts/check_setup.sh。
+compatibility: Node ≥ 22、Chrome 或 Chromium、ffmpeg/ffprobe。字体随 skill 分发（思源宋体 / 思源黑体 / Oswald / JetBrains Mono），macOS、Linux、Windows 渲出来一样。首次使用先跑 scripts/check_setup.sh。
 ---
 
 # Riso B-roll · 孔版双色信息动画
@@ -81,5 +81,5 @@ node scripts/qa.mjs     $P/compositions/*.html           # 再查一遍：时长
 
 - 嵌套元素不会自动 `position:absolute`（只有 `#stage` 的直接子元素会）——容器里的子元素要自己写。
 - **先排版、后建时间轴**：`fit()` / `inkBox()` 要在任何 tween 之前调用，否则量到的是动画初始态。
-- 数字按**墨迹**对齐（`Riso.inkBox`），不要按行框——DIN 的字形会超出行框。
+- 数字按**墨迹**对齐（`Riso.inkBox`），不要按行框——数字字体的字形会超出行框。
 - 多行文本用 `Riso.text(el, '第一行\n第二行[重点]')`，不要直接 `textContent`，否则逐字升起不生效。

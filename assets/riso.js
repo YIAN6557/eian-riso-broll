@@ -66,7 +66,7 @@
     return size;
   }
 
-  /* 字形墨迹框：DIN 等字体的字形会超出行框，排版要按“墨迹”对齐而不是按盒子。
+  /* 字形墨迹框：Oswald 等数字字体的字形会超出行框，排版要按“墨迹”对齐而不是按盒子。
      返回 #stage 坐标系里的 {top, bottom, left, right}（单行元素；先排版、后建时间轴时调用） */
   function inkBox(el) {
     el = els(el)[0];
@@ -197,7 +197,7 @@
 
     /* 滚筒刷过：clip-path 从一侧扫开（文字、色带都可以） */
     C.roll = (sel, t, { dur = .55, dir = 'right', stagger = 0 } = {}) => {
-      // 四周多留 30% 余量：DIN 等字形的墨迹会超出行框，裁到 inset(0) 会把字头切掉
+      // 四周多留 30% 余量：数字字体的墨迹会超出行框，裁到 inset(0) 会把字头切掉
       const o = '-30%', from = { right: `inset(${o} 100% ${o} ${o})`, left: `inset(${o} ${o} ${o} 100%)`, down: `inset(${o} ${o} 100% ${o})`, up: `inset(100% ${o} ${o} ${o})` }[dir];
       C.tl.fromTo(els(sel), { clipPath: from }, { clipPath: `inset(${o} ${o} ${o} ${o})`, duration: dur, stagger, ease: 'expo.inOut', immediateRender: true }, t);
       C.at(tt => { if (tt >= t + dur + stagger * (els(sel).length - 1)) els(sel).forEach(e => { e.style.clipPath = 'none'; }); });
@@ -255,10 +255,13 @@
     C.seek = t => { C.tl.seek(t, false); for (const f of C.fns) f(t); };
 
     /* ── 构建：等字体就绪再量尺寸 ── */
-    const fams = ['900 100px "Songti SC"', '700 100px "DIN Condensed"', '600 40px "PingFang SC"', '500 28px Menlo'];
+    const fams = ['900 100px "Riso Serif"', '700 100px "Riso Num"', '600 40px "Riso Sans"', '500 28px "Riso Mono"'];
     const ready = Promise.all(fams.map(f => document.fonts.load(f).catch(() => null)))
       .then(() => document.fonts.ready)
       .then(() => {
+        // 字体随 skill 分发；没加载上（assets/fonts 缺失或路径错）时报错，不要悄悄换成系统字体出片
+        const miss = fams.filter(f => !document.fonts.check(f));
+        if (miss.length) console.error('字体没加载上：' + miss.join(', ') + '（检查 assets/fonts/）');
         if (!frame.querySelector('.fiber')) frame.insertAdjacentHTML('beforeend', '<div class="fiber"></div><div class="press"></div>');
         build(C);
         C.seek(0);

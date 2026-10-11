@@ -24,7 +24,7 @@
 - 两墨正片叠底：重叠处自动出现第三色。
 - B 版整版 3px 套印错位；所有“渐变”都用网点。
 - 动画就是“这张海报被印出来的过程”：网点显影、套印归位、盖章砸落、滚筒刷过、铅字升起。
-- 宋体 Black 做标题，DIN Condensed 做数字。四组色本：墨蓝×荧光粉、深青×橙、藏青×朱红、墨黑×明黄。
+- 思源宋体 Heavy 做标题，Oswald 做数字（字体随 skill 分发，任何系统渲出来一样）。四组色本：墨蓝×荧光粉、深青×橙、藏青×朱红、墨黑×明黄。
 
 ## 和常见“AI 信息动画”不一样的地方
 
@@ -43,7 +43,7 @@ git clone <本仓库> ~/.claude/skills/eian-riso-broll
 ~/.claude/skills/eian-riso-broll/scripts/check_setup.sh
 ```
 
-依赖：Node ≥ 22、Chrome/Chromium、ffmpeg。macOS 自带字体效果最好。
+依赖：Node ≥ 22、Chrome/Chromium、ffmpeg。字体已经放在 `assets/fonts/`，不用另装。
 
 ## 使用
 
@@ -79,7 +79,8 @@ templates/               number steps converge compare network quote focus versu
 assets/
 ├── riso.css             全部样式与色本
 ├── riso.js              动效库（时间轴 helper、网点画布、版面自检）
-└── gsap.min.js          GSAP 3（GreenSock 标准许可，免费商用）
+├── gsap.min.js          GSAP 3（GreenSock 标准许可，免费商用）
+└── fonts/               随 skill 分发的字体（OFL）+ 许可证
 scripts/
 ├── render.mjs           逐帧渲染 → mp4 / mov / 样帧 / contact sheet（自带 CDP 驱动）
 ├── qa.mjs               质检 + 叠层图
@@ -89,5 +90,6 @@ scripts/
 └── lib/chrome.mjs       headless Chrome 驱动（Node 自带 WebSocket）
 tests/smoke.mjs          一键自测：全部模板 → 样帧 + 成片 + 质检 + 时长脚本
 evals/evals.json         行为评测
+tools/build_fonts.py     从上游开源字体生成 assets/fonts（维护者用）
 demo/                    GIF 与末帧一览
 ```

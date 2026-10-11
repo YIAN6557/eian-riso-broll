@@ -1,0 +1,115 @@
+<!doctype html>
+<!-- 模板 · converge · 收敛 / 归类
+     用于：很多 → 很少（30 多个文件夹收敛成 6 大类；50 个候选筛到 3 个）。
+     画面：上方「多 → 少」两个数字对照；下方先铺满 N 张小卡（A 墨线框，逐张弹落），
+     然后小卡分组飞向 K 个大块并被“吸收”，大块用 B 墨网点显影，最后少的那个数字盖章。
+     大类名字台词没给就留空（只放序号），绝不替用户编。 -->
+<html lang="zh-CN"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../assets/riso.css">
+<script src="../assets/gsap.min.js"></script>
+<script src="../assets/riso.js"></script>
+<style>
+  #from, #to { top:300px }
+  #from { left:var(--gutter) }
+  #to   { right:var(--gutter); text-align:right }
+  .big  { font-size:300px }
+  .cap  { position:absolute; white-space:nowrap }
+  #arrow{ top:0; left:0; width:1080px; height:600px; overflow:visible }
+  #arrow path{ fill:none; stroke:var(--a); stroke-width:6; stroke-linecap:square }
+  #field{ inset:0 }
+  .chip { position:absolute; border:4px solid var(--a); background:var(--paper); border-radius:3px }
+  .blk  { position:absolute; border:4px solid var(--a); border-radius:3px }
+  .blk .tone{ position:absolute; inset:10px; --td:3.4px }
+  .blk .ix{ position:absolute; left:22px; top:20px; color:var(--a); mix-blend-mode:multiply }
+  .blk .nm{ position:absolute; left:22px; bottom:18px }
+  #floor{ left:0; top:1330px; width:1080px; height:590px }
+</style></head>
+<body>
+<div id="frame"><div id="stage">
+  <div class="mast t"><span class="tag" id="m1"></span><span id="m2"></span></div>
+  <div id="from"><div id="fn" class="num big a t"></div><div id="fc" class="cap hd hd-s a t"></div></div>
+  <div id="to"><div id="tn" class="num big b t"></div><div id="tc" class="cap hd hd-s a t"></div></div>
+  <svg id="arrow"><path id="ap" d=""/></svg>
+  <div id="field"></div>
+  <canvas id="floor" class="tone b"></canvas>
+</div></div>
+<script>
+const DATA = {
+  palette:  'pal-blue',
+  mast:     ['03 · 分类', '03 / 06'],
+  from:     { n: '30+', cap: '个文件夹', count: 30 },   // count = 画多少张小卡（≤ 36）
+  to:       { n: '6',   cap: '个大类',   count: 6 },    // 2–6 个大块
+  names:    [],                                       // 大类名称：台词给了才填，否则留空数组
+  duration: 5.5,
+};
+
+document.body.className = DATA.palette;
+m1.textContent = DATA.mast[0]; m2.textContent = DATA.mast[1];
+
+Riso.comp({ duration: DATA.duration, seed: 33 }, C => {
+  // ── 版面：两个数字 + 一根箭头 ──
+  fn.textContent = DATA.from.n; tn.textContent = DATA.to.n;
+  Riso.text(fc, DATA.from.cap); Riso.text(tc, DATA.to.cap);
+  const fi = Riso.inkBox(fn);
+  for (const cap of [fc, tc]) cap.style.top = (fi.bottom - from.offsetTop + 30) + 'px';
+  tc.style.right = '0';
+  const ax0 = Riso.box(fn).right + 56, ax1 = Riso.box(to).left - 56, ay = (fi.top + fi.bottom) / 2;
+  ap.setAttribute('d', `M${ax0},${ay} L${ax1},${ay} M${ax1 - 34},${ay - 30} L${ax1},${ay} L${ax1 - 34},${ay + 30}`);
+
+  // ── 小卡网格（上）与大块（下）共用同一块区域 ──
+  const top = fi.bottom + 150, bottom = 1290, W = 936, x0 = 72;
+  const N = Math.min(DATA.from.count, 36), K = DATA.to.count;
+  const cols = 6, rows = Math.ceil(N / cols), g = 18;
+  const cw = (W - g * (cols - 1)) / cols, ch = Math.min(64, (bottom - top - g * (rows - 1)) / rows);
+  const kc = K <= 3 ? 1 : 2, kr = Math.ceil(K / kc), G = 26;
+  const bw = (W - G * (kc - 1)) / kc, bh = (bottom - top - G * (kr - 1)) / kr;
+  const blocks = [];
+  for (let k = 0; k < K; k++) {
+    const b = document.createElement('div');
+    b.className = 'blk';
+    const x = x0 + (k % kc) * (bw + G), y = top + Math.floor(k / kc) * (bh + G);
+    Object.assign(b.style, { left: x + 'px', top: y + 'px', width: bw + 'px', height: bh + 'px' });
+    b.innerHTML = `<div class="tone fill-b tint"></div><div class="ix mono t">${String(k + 1).padStart(2, '0')}</div>` + (DATA.names[k] ? `<div class="nm hd hd-s a t">${DATA.names[k]}</div>` : '');
+    field.appendChild(b);
+    blocks.push({ el: b, cx: x + bw / 2, cy: y + bh / 2 });
+  }
+  const chips = [];
+  for (let i = 0; i < N; i++) {
+    const c = document.createElement('div');
+    c.className = 'chip';
+    const x = x0 + (i % cols) * (cw + g), y = top + Math.floor(i / cols) * (ch + g) + (bottom - top - rows * ch - (rows - 1) * g) / 2;
+    Object.assign(c.style, { left: x + 'px', top: y + 'px', width: cw + 'px', height: ch + 'px' });
+    field.appendChild(c);
+    // 归到最近的大块
+    let best = 0, bd = 1e9;
+    blocks.forEach((b, k) => { const d = Math.hypot(b.cx - (x + cw / 2), b.cy - (y + ch / 2)); if (d < bd) { bd = d; best = k; } });
+    chips.push({ el: c, dx: blocks[best].cx - (x + cw / 2), dy: blocks[best].cy - (y + ch / 2), k: best });
+  }
+
+  // ── 时间轴 ──
+  C.camera().boil().floor('#floor');
+  C.roll('.mast', 0, { dur: .5 });
+  C.print(fn, .05, { dur: .55 });
+  C.rise(fc, .2);
+  // 小卡逐张落下（随机顺序，铺满约 1 秒）
+  const order = chips.map((_, i) => i).sort(() => C.rand() - .5);
+  order.forEach((i, j) => {
+    const t = .35 + j * (1.0 / N);
+    C.tl.fromTo(chips[i].el, { scale: 0, rotation: (C.rand() - .5) * 30 }, { scale: 1, rotation: (C.rand() - .5) * 4, duration: .32, ease: 'back.out(2)', immediateRender: true }, t);
+  });
+  // 收敛：小卡飞进各自的大块并缩没；大块同时网点显影
+  const tm = 1.75;
+  C.draw('#ap', tm - .2, { dur: .55 });
+  chips.forEach((c, i) => {
+    const d = (c.k * .07) + C.rand() * .12;
+    C.tl.to(c.el, { x: c.dx, y: c.dy, scale: .2, rotation: 0, duration: .55, ease: 'power3.in' }, tm + d);
+    C.tl.to(c.el, { autoAlpha: 0, duration: .08, ease: 'none' }, tm + d + .5);
+  });
+  C.tl.fromTo(blocks.map(b => b.el), { scale: .86, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .4, stagger: .07, ease: 'back.out(1.8)', immediateRender: true }, tm + .3);
+  C.print(blocks.map(b => b.el.querySelector('.tone')), tm + .4, { dur: .6, stagger: .07, to: 3.4 });
+  C.register(tm + .9);
+  const land = C.stamp(to.querySelector('#tn'), tm + 1.0, { rot: 8 });
+  C.rise(tc, land + .15);
+});
+</script>
+</body></html>

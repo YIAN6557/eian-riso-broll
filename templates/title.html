@@ -1,0 +1,67 @@
+<!doctype html>
+<!-- 模板 · title · 章节卡 / 系列标题
+     用于：第一个…第二个…第三个…的章节口；一条视频的开场标题。同一模板换 index / 色本派生整套。
+     画面：一个占满画面的 B 墨序号从下往上“印”出来 → 套印归位 → 小标签刷出 → 宋体标题叠印压住序号的脚。 -->
+<html lang="zh-CN"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../assets/riso.css">
+<script src="../assets/gsap.min.js"></script>
+<script src="../assets/riso.js"></script>
+<style>
+  #ix    { left:0; top:0; font-size:1180px }
+  #kick  { left:var(--gutter) }
+  #ttl   { left:var(--gutter) }
+  #sub   { left:var(--gutter) }
+  #floor { left:0; top:1330px; width:1080px; height:590px }
+</style></head>
+<body>
+<div id="frame"><div id="stage">
+  <div class="mast t"><span class="tag" id="m1"></span><span id="m2"></span></div>
+  <div id="ix"   class="num b t" data-overprint></div>
+  <div id="kick" class="lb a t"></div>
+  <div id="ttl"  class="hd a t" data-overprint></div>
+  <div id="sub"  class="lb a t"></div>
+  <canvas id="floor" class="tone b"></canvas>
+</div></div>
+<script>
+const DATA = {
+  palette:  'pal-teal',
+  flood:    false,              // true = 满版墨底（系列里交替使用制造明暗节奏）
+  mast:     ['起标题 · 三关', '01 / 03'],
+  index:    '01',               // 1–2 位
+  kicker:   '第一关',            // ≤ 6 字，可空
+  title:    '筛选题',            // ≤ 6 字（一行）
+  sub:      '',                 // 可空；≤ 14 字
+  duration: 3.5,
+};
+
+document.body.className = DATA.palette;
+if (DATA.flood) document.getElementById('frame').classList.add('flood');
+m1.textContent = DATA.mast[0]; m2.textContent = DATA.mast[1];
+
+Riso.comp({ duration: DATA.duration, seed: 99 }, C => {
+  // ── 版面：序号墨迹左缘贴 56、顶 = 300；标题压住序号下 1/5 ──
+  ix.textContent = DATA.index;
+  Riso.fit(ix, { width: 1000, max: 1320, min: 600 });
+  let k = Riso.inkBox(ix);
+  ix.style.left = (56 - k.left) + 'px'; ix.style.top = (300 - k.top) + 'px';
+  k = Riso.inkBox(ix);
+  Riso.text(ttl, DATA.title);
+  Riso.fit(ttl, { width: 936, max: 190, min: 110 });
+  ttl.style.top = Math.min(k.bottom - ttl.offsetHeight * .55, 1290 - ttl.offsetHeight - (DATA.sub ? 70 : 0)) + 'px';
+  if (DATA.kicker) { Riso.text(kick, DATA.kicker); kick.style.top = Riso.box(ttl).top - kick.offsetHeight - 8 + 'px'; }
+  else kick.style.display = 'none';
+  if (DATA.sub) { Riso.text(sub, DATA.sub); sub.style.top = Riso.box(ttl).bottom + 18 + 'px'; }
+  else sub.style.display = 'none';
+
+  // ── 时间轴 ──
+  C.camera({ push: .045 }).boil().floor('#floor');
+  C.roll('.mast', 0, { dur: .5 });
+  C.roll(ix, 0, { dur: .7, dir: 'up' });
+  C.print(ix, 0, { dur: .8, from: 2 });
+  C.register(.6);
+  if (DATA.kicker) C.roll(kick, .75, { dur: .4 });
+  const end = C.rise(ttl, .85, { stagger: .05, dur: .7 });
+  if (DATA.sub) C.rise(sub, end, { stagger: .02 });
+});
+</script>
+</body></html>

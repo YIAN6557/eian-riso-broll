@@ -1,0 +1,113 @@
+<!doctype html>
+<!-- 模板 · network · 连接 / 密度 / 规模
+     用于：关系、链接、网络效应、“越连越密”（1 万 2 千条双链；300 个节点互相引用）。
+     画面：大数字 + 单位叠印 → 一句论点 → 下方一张网从中心向外长出：节点弹出、连线逐条画出，
+     数字和连线同步爬升到目标值。网是示意（节点数固定 ~40），不代表真实数量，所以不标节点数。 -->
+<html lang="zh-CN"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../assets/riso.css">
+<script src="../assets/gsap.min.js"></script>
+<script src="../assets/riso.js"></script>
+<style>
+  #num  { left:58px; top:262px }
+  #unit { right:var(--gutter) }
+  #say  { left:var(--gutter) }
+  #net  { left:0; top:0; width:1080px; height:1920px; overflow:visible }
+  #net line { stroke:var(--a); stroke-width:2.2; mix-blend-mode:multiply }
+  #mark { transform-origin:left center }
+  #net circle.n { fill:var(--a) }
+  #net circle.h { fill:var(--b); mix-blend-mode:multiply; translate:var(--rx) var(--ry) }
+  #floor { left:0; top:1330px; width:1080px; height:590px }
+</style></head>
+<body>
+<div id="frame"><div id="stage">
+  <div class="mast t"><span class="tag" id="m1"></span><span id="m2"></span></div>
+  <div id="num"  class="num b t" data-overprint></div>
+  <div id="unit" class="hd a t" data-overprint></div>
+  <div id="mark" class="fill-b"></div>
+  <div id="say"  class="hd hd-m a t"></div>
+  <svg id="net"></svg>
+  <canvas id="floor" class="tone b"></canvas>
+</div></div>
+<script>
+const DATA = {
+  palette:  'pal-blue',
+  mast:     ['05 · 链接密度', '05 / 06'],
+  number:   12000,
+  comma:    true,
+  unit:     '条双链',
+  say:      '值钱的是[链接密度]',      // 一行 ≤ 10 字；[ ] = 荧光压条
+  nodes:    58,                      // 网的节点数（示意）
+  duration: 5.5,
+};
+
+document.body.className = DATA.palette;
+m1.textContent = DATA.mast[0]; m2.textContent = DATA.mast[1];
+const fmt = v => DATA.comma ? Math.round(v).toLocaleString('en-US') : String(Math.round(v));
+
+Riso.comp({ duration: DATA.duration, seed: 55 }, C => {
+  // ── 版面 ──
+  num.textContent = fmt(DATA.number);
+  Riso.fit(num, { width: 964, max: 420, min: 220 });
+  num.style.top = num.offsetTop + (300 - Riso.inkBox(num).top) + 'px';
+  const ni = Riso.inkBox(num);
+  unit.textContent = DATA.unit;
+  Riso.fit(unit, { width: 520, max: 118, min: 80 });
+  let u = Riso.inkBox(unit);
+  unit.style.top = unit.offsetTop + (ni.bottom - (u.bottom - u.top) * .4 - u.top) + 'px';
+  u = Riso.inkBox(unit);
+  Riso.text(say, DATA.say);
+  Riso.fit(say, { width: 936, max: 88, min: 60 });
+  say.style.top = (u.bottom + 56) + 'px';
+  const ems = [...say.querySelectorAll('.em')];
+  if (ems.length) {
+    const a = Riso.box(ems[0]), b = Riso.box(ems[ems.length - 1]);
+    Object.assign(mark.style, { left: a.left - 8 + 'px', width: b.right - a.left + 16 + 'px', top: a.top + a.height * .52 + 'px', height: a.height * .4 + 'px' });
+  } else mark.style.display = 'none';
+
+  // ── 网：在 say 下方到 1290 之间撒点（最小间距），每点连最近的 2–3 个 + 少量远链 ──
+  const top = Riso.box(say).bottom + 70, bot = 1290, L = 96, R = 984, cx = 540, cy = (top + bot) / 2;
+  const P = [];
+  for (let tries = 0; P.length < DATA.nodes && tries < 5000; tries++) {
+    const x = L + C.rand() * (R - L), y = top + C.rand() * (bot - top);
+    if (P.every(p => Math.hypot(p.x - x, p.y - y) > 58)) P.push({ x, y, d: Math.hypot((x - cx) * .8, y - cy) });
+  }
+  P.sort((a, b) => a.d - b.d);                                // 从中心向外长
+  const E = [], key = (i, j) => i < j ? i + ':' + j : j + ':' + i, has = new Set();
+  P.forEach((p, i) => {
+    const near = P.map((q, j) => [j, Math.hypot(p.x - q.x, p.y - q.y)]).filter(([j]) => j !== i).sort((a, b) => a[1] - b[1]);
+    for (const [j] of near.slice(0, 2 + (C.rand() < .5 ? 1 : 0))) if (!has.has(key(i, j))) { has.add(key(i, j)); E.push([i, j]); }
+    const far = near.find(([, d]) => d > 150 && d < 270);
+    if (far && C.rand() < .1 && !has.has(key(i, far[0]))) { has.add(key(i, far[0])); E.push([i, far[0]]); }
+  });
+  E.sort((a, b) => Math.max(a[0], a[1]) - Math.max(b[0], b[1]));
+  const NS = 'http://www.w3.org/2000/svg';
+  const lines = E.map(([i, j]) => {
+    const l = document.createElementNS(NS, 'line');
+    l.setAttribute('x1', P[i].x); l.setAttribute('y1', P[i].y); l.setAttribute('x2', P[j].x); l.setAttribute('y2', P[j].y);
+    net.appendChild(l); return l;
+  });
+  const deg = P.map((_, i) => E.filter(e => e.includes(i)).length);
+  const hubs = new Set(deg.map((d, i) => [d, i]).sort((a, b) => b[0] - a[0]).slice(0, 4).map(x => x[1]));
+  const dots = P.map((p, i) => {
+    const c = document.createElementNS(NS, 'circle');
+    c.setAttribute('cx', p.x); c.setAttribute('cy', p.y); c.setAttribute('r', hubs.has(i) ? 22 : 9);
+    c.setAttribute('class', hubs.has(i) ? 'h' : 'n');
+    c.style.transformOrigin = `${p.x}px ${p.y}px`;
+    net.appendChild(c); return c;
+  });
+
+  // ── 时间轴 ──
+  C.camera().boil().floor('#floor');
+  C.roll('.mast', 0, { dur: .5 });
+  C.print(num, .05, { dur: .6 });
+  const t0 = .55, span = 2.2;
+  C.count(num, t0, { to: DATA.number, dur: span + .3, ease: 'power2.in', fmt });
+  C.register(.75);
+  C.stamp(unit, .85, { rot: -6 });
+  const said = C.rise(say, 1.25);
+  if (ems.length) C.bar(mark, said + .1, { dur: .45 });
+  dots.forEach((d, i) => C.tl.fromTo(d, { scale: 0 }, { scale: 1, duration: .35, ease: 'back.out(2.4)', immediateRender: true }, t0 + .2 + span * (i / P.length) * .8));
+  C.draw(lines, t0 + .35, { dur: .32, stagger: span / lines.length });
+});
+</script>
+</body></html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<!-- 模板 · compare · 前后对比（同一单位的两个量）
+     用于：以前 X → 现在 Y（8 分钟 → 30 秒；3 天 → 2 小时；100 次 → 7 次）。
+     画面：两根条按真实比例画 —— “以前”那根慢慢长满（时间在流逝），“现在”那根一下就到。
+     动效本身就是论点：慢 vs 快，看一眼就懂。比例必须真实（同一单位换算后再算长度）。 -->
+<html lang="zh-CN"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../assets/riso.css">
+<script src="../assets/gsap.min.js"></script>
+<script src="../assets/riso.js"></script>
+<style>
+  #title { left:var(--gutter); top:292px }
+  .row   { position:absolute; left:var(--gutter); right:var(--gutter) }
+  .row .lb  { position:absolute; left:0; top:0 }
+  .row .v   { position:absolute; left:0; font-size:300px }
+  .row .u   { position:absolute }
+  .row .bar { position:absolute; left:0; height:64px; transform-origin:left center }
+  .row .track{ position:absolute; left:0; right:0; height:64px; border:3px dashed var(--a); opacity:.28 }
+  #scale { position:absolute; right:var(--gutter) }
+  #floor { left:0; top:1330px; width:1080px; height:590px }
+</style></head>
+<body>
+<div id="frame"><div id="stage">
+  <div class="mast t"><span class="tag" id="m1"></span><span id="m2"></span></div>
+  <div id="title" class="hd hd-m a t"></div>
+  <div class="row" id="ra"><div class="lb a t"></div><div class="v num a t"></div><div class="u hd hd-m a t"></div><div class="track"></div><div class="bar fill-a"></div></div>
+  <div class="row" id="rb"><div class="lb a t"></div><div class="v num b t" data-overprint></div><div class="u hd hd-m a t"></div><div class="track"></div><div class="bar fill-b"></div></div>
+  <div id="scale" class="mono a t">条长 = 真实比例</div>
+  <canvas id="floor" class="tone b"></canvas>
+</div></div>
+<script>
+const DATA = {
+  palette:  'pal-blue',
+  mast:     ['04 · 效率', '04 / 06'],
+  title:    '找一条素材',                       // 比较的是什么（≤ 8 字）
+  before:   { label: '以前', value: 8,  unit: '分钟', base: 480 },   // base = 换算成同一单位（秒）
+  after:    { label: '现在', value: 30, unit: '秒',   base: 30 },
+  duration: 5,
+};
+
+document.body.className = DATA.palette;
+m1.textContent = DATA.mast[0]; m2.textContent = DATA.mast[1];
+
+Riso.comp({ duration: DATA.duration, seed: 44 }, C => {
+  // ── 版面 ──
+  Riso.text(title, DATA.title);
+  const W = 936, max = Math.max(DATA.before.base, DATA.after.base);
+  let y = Riso.box(title).bottom + 70;
+  const rows = [[ra, DATA.before], [rb, DATA.after]].map(([r, d]) => {
+    const [lb, v, u, track, bar] = r.children;
+    Riso.text(lb, d.label); v.textContent = d.value; Riso.text(u, d.unit);
+    r.style.top = y + 'px';
+    const vi = Riso.inkBox(v);
+    v.style.top = v.offsetTop + (y + 70 - vi.top) + 'px';             // 数字墨迹顶 = 标签下 70px
+    const v2 = Riso.inkBox(v);
+    u.style.left = (v2.right - 72 + 22) + 'px';
+    u.style.top = (v2.bottom - y - u.offsetHeight * .86) + 'px';     // 单位坐在数字基线上
+    const by = v2.bottom - y + 36;
+    bar.style.top = track.style.top = by + 'px';
+    bar.style.width = Math.max(14, W * d.base / max) + 'px';
+    y += by + 64 + 72;
+    return { r, lb, v, u, bar, d };
+  });
+  const tb = Riso.box(title);
+  scale.style.top = (tb.bottom - 40) + 'px';                         // 和标题同一行、右对齐（避开右侧按钮栏）
+
+  // ── 时间轴 ──
+  C.camera().boil().floor('#floor');
+  C.roll('.mast', 0, { dur: .5 });
+  C.rise(title, .08);
+  const [A, B] = rows;
+  // 以前：慢 —— 条匀速长满，数字同步爬升
+  C.rise(A.lb, .45);
+  C.tl.fromTo(A.bar, { scaleX: 0 }, { scaleX: 1, duration: 1.35, ease: 'none', immediateRender: true }, .7);
+  C.count(A.v, .7, { to: A.d.value, dur: 1.35, ease: 'none', fmt: v => Math.round(v) });
+  C.rise(A.u, .9);
+  // 现在：快 —— 一下到位，盖章
+  C.rise(B.lb, 2.25);
+  C.tl.fromTo(B.bar, { scaleX: 0 }, { scaleX: 1, duration: .12, ease: 'power2.out', immediateRender: true }, 2.5);
+  const land = C.stamp(B.v, 2.45, { rot: -7 });
+  C.rise(B.u, land + .05);
+  C.register(land + .25);
+  C.roll('#scale', land + .5, { dur: .45 });
+});
+</script>
+</body></html>

@@ -1,0 +1,32 @@
+#!/bin/bash
+# 环境自检：Node ≥ 22（自带 WebSocket）、Chrome/Chromium、ffmpeg/ffprobe、字体、skill 资产
+set -uo pipefail
+PASS=0; FAIL=0; WARN=0
+ok()   { echo "  ✅ $1"; PASS=$((PASS+1)); }
+bad()  { echo "  ❌ $1"; FAIL=$((FAIL+1)); }
+warn() { echo "  ⚠️  $1"; WARN=$((WARN+1)); }
+SKILL="$(cd "$(dirname "$0")/.." && pwd)"
+echo "eian-riso-broll 环境自检"; echo
+
+if command -v node >/dev/null 2>&1; then
+  M=$(node -v | sed 's/^v//' | cut -d. -f1)
+  [ "$M" -ge 22 ] && ok "node $(node -v)" || bad "node $(node -v) 太旧：需要 ≥ 22（渲染器用 Node 自带的 WebSocket）"
+else bad "没有 node（需要 ≥ 22）"; fi
+
+if node -e "import('$SKILL/scripts/lib/chrome.mjs').then(m=>console.log(m.findChrome()))" >/tmp/riso-chrome.txt 2>/dev/null; then
+  ok "Chrome: $(cat /tmp/riso-chrome.txt)"
+else bad "找不到 Chrome/Chromium（可用环境变量 CHROME=<路径> 指定）"; fi
+
+command -v ffmpeg  >/dev/null && ok "ffmpeg $(ffmpeg -version | head -1 | awk '{print $3}')" || bad "没有 ffmpeg"
+command -v ffprobe >/dev/null && ok "ffprobe" || bad "没有 ffprobe"
+
+# 字体：macOS 自带宋体 Black / DIN Condensed；其他系统会回退到 Noto Serif SC / Oswald（风格会变，需自行安装）
+F=/System/Library/Fonts/Supplemental
+[ -f "$F/Songti.ttc" ] && ok "宋体 Songti SC（标题）" || warn "没有 Songti SC：标题会回退到 Noto Serif SC（请安装思源宋体 Heavy）"
+[ -f "$F/DIN Condensed Bold.ttf" ] && ok "DIN Condensed（数字）" || warn "没有 DIN Condensed：数字会回退到 Oswald / Helvetica"
+
+for f in riso.css riso.js gsap.min.js; do [ -f "$SKILL/assets/$f" ] && ok "assets/$f" || bad "缺 assets/$f"; done
+
+echo
+if [ $FAIL -ne 0 ]; then echo "$FAIL 项未通过。"; exit 1; fi
+[ $WARN -gt 0 ] && echo "通过 $PASS 项，提醒 $WARN 项。" || echo "全部通过（$PASS 项）。"

@@ -1,0 +1,108 @@
+/* ==============================================================
+   RISO B-ROLL · 孔版双色信息动画 · 样式系统
+   纸 + 两种专色油墨（A 深墨 / B 荧光）+ 叠印 + 套印错位 + 网点
+   画布 1080×1920。所有颜色只来自 --paper / --a / --b 三个变量。
+   ============================================================== */
+
+/* ── 色本：一个视频功能段锁一组 ─────────────────────────── */
+:root,
+.pal-blue  { --paper:#F3EEE4; --a:#22308C; --b:#FF4C97; }  /* 墨蓝 × 荧光粉（默认）*/
+.pal-teal  { --paper:#F1EDE3; --a:#0C4A4C; --b:#FF6A2A; }  /* 深青 × 橙 */
+.pal-ink   { --paper:#EEEAE1; --a:#1B1B1B; --b:#FFC21A; }  /* 墨黑 × 明黄 */
+.pal-red   { --paper:#F2ECE2; --a:#1C2A4E; --b:#F0433A; }  /* 藏青 × 朱红 */
+
+:root{
+  /* 套印错位：B 版相对 A 版的偏移。动效 register() 会让它从大偏移“咔”地归位到这里 */
+  --rx: 3px; --ry: -2px;
+
+  --serif: "Songti SC", "STSongti-SC-Black", "Noto Serif SC", serif;   /* 标题：宋体 Black */
+  --sans:  "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", sans-serif;
+  --num:   "DIN Condensed", "DIN Alternate", "Oswald", "Helvetica Neue", sans-serif;
+  --mono:  "Menlo", "SF Mono", monospace;
+
+  /* 安全区（QA 脚本读同一组数字，改这里要同步 scripts/qa.mjs） */
+  --info-top: 168px;      /* 平台顶栏以下 */
+  --info-bottom: 1330px;  /* 以下是字幕床：只放装饰，不放字 */
+  --gutter: 72px;
+}
+
+*{ box-sizing:border-box }
+html, body{ margin:0; width:1080px; height:1920px; overflow:hidden; background:var(--paper) }
+body{ color:var(--a); font-family:var(--sans); -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision }
+
+#frame{ position:relative; width:1080px; height:1920px; overflow:hidden; background:var(--paper) }
+#stage{ position:absolute; inset:0; transform-origin:50% 15%; background:var(--paper) }
+#frame > *, #stage > *{ position:absolute }
+
+/* 透明导出（render --alpha）：纸被拿掉，只剩油墨 */
+.alpha, .alpha body, .alpha #frame, .alpha #stage{ background:transparent !important }
+.alpha .fiber, .alpha .press{ display:none }
+
+/* ── 油墨 ─────────────────────────────────────────────── */
+/* A 版：深墨，承担所有可读文字与结构线 */
+.a      { color:var(--a); mix-blend-mode:multiply }
+.fill-a { background:var(--a) }
+/* B 版：荧光点色。正片叠底 + 整版统一错位 —— 和 A 重叠处自动出现第三色 */
+.b      { color:var(--b); mix-blend-mode:multiply; translate:var(--rx) var(--ry) }
+.fill-b { background:var(--b); mix-blend-mode:multiply; translate:var(--rx) var(--ry) }
+.line-a { border-color:var(--a) }
+
+/* 满版墨底帧（钩子 / 金句 / 高潮用）：纸色反白字，B 不再叠底 */
+#frame.flood, .flood #stage{ background:var(--a) }
+.flood .a, .flood{ color:var(--paper) }
+.flood .fill-a{ background:var(--paper) }
+.flood .a, .flood .b, .flood .fill-b{ mix-blend-mode:normal }
+
+/* ── 纸与印刷质感（压在最上层，不参与版面）────────────── */
+.fiber{ inset:0; pointer-events:none; opacity:.26; mix-blend-mode:multiply; z-index:50;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .31 0 0 0 0 .24 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='360' height='360' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:360px 360px }
+/* 油墨不匀：高频噪点以“滤色”提亮，墨块里出现孔版特有的斑驳。逐两帧换位 = 质感在呼吸 */
+.press{ inset:-40px; pointer-events:none; opacity:.30; mix-blend-mode:screen; z-index:51;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='2' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.6 -.78'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23p)'/%3E%3C/svg%3E");
+  background-size:240px 240px }
+
+/* ── 字 ───────────────────────────────────────────────── */
+.t{ white-space:nowrap }                     /* 所有文字元素都带 .t（QA 靠它找字）*/
+.hd{ font-family:var(--serif); font-weight:900; letter-spacing:-.02em; line-height:1.1 }
+.hd-xl{ font-size:156px } .hd-l{ font-size:118px } .hd-m{ font-size:88px } .hd-s{ font-size:64px }
+.num{ font-family:var(--num); font-weight:700; line-height:.78; letter-spacing:-.005em; font-variant-numeric:tabular-nums }
+.lb{ font-family:var(--sans); font-weight:600; font-size:42px; letter-spacing:.01em; line-height:1.25 }
+.mono{ font-family:var(--mono); font-weight:500; font-size:28px; letter-spacing:.16em; line-height:1 }
+
+/* 逐字拆分后的字符（Riso.split 生成）*/
+.ln{ display:block; overflow:hidden; padding:0 .04em .06em; margin:0 -.04em -.06em }
+.ch{ display:inline-block; will-change:transform }
+
+/* ── 版头：全系列签名 ────────────────────────────────── */
+.mast{ left:var(--gutter); right:var(--gutter); top:176px; height:58px; display:flex;
+  justify-content:space-between; align-items:flex-start; border-bottom:4px solid currentColor;
+  font:500 28px/1 var(--mono); letter-spacing:.16em; transform-origin:left center }
+.mast .tag{ display:flex; gap:18px; align-items:center }
+.mast .tag::before{ content:""; width:22px; height:22px; background:var(--b); mix-blend-mode:multiply;
+  translate:var(--rx) var(--ry) }
+.flood .mast .tag::before{ mix-blend-mode:normal }
+
+/* ── 部件 ─────────────────────────────────────────────── */
+/* 荧光笔压条：放在字后面，B 版叠印 */
+.mark{ height:.46em; bottom:.02em; transform-origin:left center }
+/* 印章框 */
+.seal{ border:6px solid var(--b); mix-blend-mode:multiply; translate:var(--rx) var(--ry); border-radius:6px }
+/* 网点画布（Riso.halftone 绘制）*/
+canvas.tone{ pointer-events:none }
+/* 截图：双色调（暗部=A 墨，亮部=纸）*/
+.shot{ overflow:hidden; background:var(--a) }
+.shot img{ width:100%; height:100%; object-fit:cover; filter:grayscale(1) contrast(1.25) brightness(1.05); mix-blend-mode:screen }
+/* 截图占位：裁切标记 + 标注，不画任何假界面 */
+.slot{ border:3px dashed currentColor; opacity:.6; display:flex; align-items:center; justify-content:center;
+  font:500 30px/1 var(--mono); letter-spacing:.12em }
+
+/* 网点淡印：一块墨只印 25–35% 的点 = 孔版的“平网”。--td 控制点径 */
+.tint{ --td:3.1px;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 var(--td), transparent calc(var(--td) + .7px));
+  -webkit-mask-size:11px 11px }
+
+/* 网点显影遮罩：--dot 从 0 长到 8px = 一层油墨被“印”出来 */
+.print{ --dot:0px;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 var(--dot), transparent calc(var(--dot) + .7px));
+  -webkit-mask-size:11px 11px }

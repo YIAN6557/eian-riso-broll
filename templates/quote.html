@@ -1,0 +1,72 @@
+<!doctype html>
+<!-- 模板 · quote · 金句 / 结论 / 钩子
+     用于：整段视频的论点落地那一句（钩子、反转、结论）。全片最多 2 条，用来制造明暗节奏。
+     画面：满版 A 墨（深底），纸色宋体大字逐字升起；[ ] 内的关键词用 B 墨网点显影 + 套印归位；
+     右下一轮 B 墨网点“太阳”出画，压住字幕床。 -->
+<html lang="zh-CN"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../assets/riso.css">
+<script src="../assets/gsap.min.js"></script>
+<script src="../assets/riso.js"></script>
+<style>
+  #lead  { left:var(--gutter); top:330px; opacity:.72 }
+  #q     { left:var(--gutter) }
+  #q .em { color:var(--b) }
+  #qm    { left:0; top:0; font-size:900px; line-height:1; color:var(--b) }
+  #sun   { left:430px; top:1180px; width:900px; height:900px }
+  #floor { left:0; top:1330px; width:1080px; height:590px }
+</style></head>
+<body>
+<div id="frame" class="flood"><div id="stage">
+  <div id="qm" class="hd tint">“</div>
+  <canvas id="sun" class="tone b"></canvas>
+  <div class="mast t"><span class="tag" id="m1"></span><span id="m2"></span></div>
+  <div id="lead" class="lb a t"></div>
+  <div id="q" class="hd a t"></div>
+</div></div>
+<script>
+const DATA = {
+  palette:  'pal-blue',
+  mast:     ['06 · 结论', '06 / 06'],
+  lead:     '所以别再问要不要做知识库了',          // 引子：可空字符串；≤ 16 字
+  quote:    '问题是\n你的笔记之间\n有没有[连接]',   // 2–4 行，每行 ≤ 7 字；[ ] = B 墨关键词
+  duration: 5,
+};
+
+document.body.className = DATA.palette;
+m1.textContent = DATA.mast[0]; m2.textContent = DATA.mast[1];
+
+Riso.comp({ duration: DATA.duration, seed: 66 }, C => {
+  // ── 版面 ──
+  if (DATA.lead) Riso.text(lead, DATA.lead); else lead.style.display = 'none';
+  Riso.text(q, DATA.quote);
+  Riso.fit(q, { width: 936, max: 150, min: 96 });
+  const qTop = DATA.lead ? Riso.box(lead).bottom + 70 : 360;
+  q.style.top = qTop + 'px';
+  const ems = [...q.querySelectorAll('.em')];
+  const qi = Riso.inkBox(qm);                                    // 大引号：墨迹右缘贴 1040、顶 = 260，垫在字后面
+  qm.style.left = (1040 - qi.right) + 'px'; qm.style.top = (260 - qi.top) + 'px';
+  ems.forEach(e => e.classList.add('b'));                        // 关键词归 B 版：跟着套印一起错位
+
+  // ── 时间轴 ── 第 0 帧就是满版墨底 + 太阳的一半网点：从口播硬切进来不会“空一下”
+  C.camera({ push: .04 }).boil();
+  const sun = Riso.halftone('#sun', { cell: 22, density: (u, v, t) => {
+    const r = Math.hypot(u - .5, v - .5) * 2;                    // 0 中心 → 1 边缘
+    const grow = .55 + .45 * Math.min(1, t / 1.6);
+    return r > grow ? 0 : Math.pow(1 - r / grow, .55) * .95;
+  }});
+  C.at(sun);
+  C.print('#qm', 0, { dur: 1.1, to: 2.4 });
+  C.roll('.mast', 0, { dur: .5 });
+  let t = .15;
+  if (DATA.lead) t = C.rise(lead, .15, { stagger: .022 }) + .05;
+  const plain = [...q.querySelectorAll('.ch:not(.em)')];
+  C.tl.from(plain, { yPercent: 108, duration: .62, stagger: .045, ease: 'expo.out' }, t);
+  const qEnd = t + .62 * .6 + .045 * plain.length;
+  if (ems.length) {
+    C.tl.from(ems, { yPercent: 108, duration: .5, stagger: .06, ease: 'expo.out' }, qEnd - .1);
+    C.print(ems, qEnd - .1, { dur: .55, stagger: .06 });
+    C.register(qEnd + .3, { dx: 26, dy: -16 });
+  }
+});
+</script>
+</body></html>

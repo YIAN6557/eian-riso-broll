@@ -141,9 +141,11 @@ More detail (in Chinese): [references/production.md](references/production.md).
 
 Code layout, the self-test and the maintenance scripts are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Credits and license
+## License
 
-- Code and docs in this repository: see [LICENSE](LICENSE).
-- Animation engine [GSAP](https://gsap.com) (`assets/gsap.min.js`): GreenSock's Standard License, free for commercial use, and not covered by this repository's license.
-- Bundled fonts: Noto Serif SC, Noto Sans SC, Oswald and JetBrains Mono, all under the SIL Open Font License; see [assets/fonts/](assets/fonts/).
-- Ideas in the workflow (three approval gates, only quoting the speaker's own words) were inspired by gbro-collage-info.
+- **Personal non-commercial use**: free under the [eian-riso-broll Personal Use License 1.0](LICENSE).
+- **Commercial use**: requires prior written commercial authorization and a license fee. See [Commercial Licensing](COMMERCIAL.md); contact `<联系邮箱>`.
+
+Use by or for companies, organizations, studios, teams, employees, contractors or client projects, as well as paid services, commercial content, advertising, sales or promotion, or videos that earn income through revenue sharing, paid content or sponsorships, all count as commercial use. Internal use, trials, not yet being profitable, or not charging clients separately does not make a use personal and non-commercial.
+
+Third-party materials (the GSAP animation engine and the bundled fonts) are not relicensed by this repository; see [Third-Party Notices](THIRD_PARTY_NOTICES.md).

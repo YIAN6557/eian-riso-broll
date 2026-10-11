@@ -1,0 +1,113 @@
+eian-riso-broll Personal Use License 1.0
+eian-riso-broll 个人使用许可协议 1.0
+
+Copyright (c) 2026 YIAN6557. All rights reserved.
+版权所有 (c) 2026 YIAN6557，保留所有权利。
+
+本协议以中文为准，英文译文仅供参考。
+The Chinese text governs; the English translation is for reference only.
+
+──────────────────────────────────────────────
+
+一、定义
+
+1. “本软件”指本仓库中由权利人创作的全部内容，包括但不限于代码、模板、样式、动效库、
+   脚本、文档、示例逐字稿、评测用例及 demo 图像。第三方素材不属于本软件（见第六条）。
+
+2. “个人非商业使用”指自然人为个人学习、研究、兴趣或非营利的个人创作而使用本软件，
+   且使用本软件及其产出物不直接或间接获得任何经济收益。
+
+3. “商业使用”指个人非商业使用以外的任何使用，包括但不限于：
+   (a) 企业、机构、工作室、团队、雇员、承包商或为客户项目使用；
+   (b) 用于收费服务、商业内容、营销、广告、品牌传播、带货或推广；
+   (c) 用本软件制作的视频或画面通过广告、平台流量分成、付费内容、赞助、
+       商单等任何方式获得收入；
+   (d) 将本软件集成进产品、服务、工作流或其他软件，或以本软件为基础提供服务。
+   内部使用、试用、尚未盈利，或没有单独向客户收费，均不因此变成个人非商业使用。
+
+二、个人非商业使用授权
+
+在遵守本协议的前提下，权利人授予你一项免费、全球范围、非独占、不可转让、
+不可再许可的许可，仅为个人非商业使用的目的：
+   (a) 使用、复制和修改本软件；
+   (b) 使用本软件为你自己的个人非商业内容制作视频和画面；
+   (c) 以非商业方式分享本软件的原样或修改版本，但须：完整保留本协议和版权声明；
+       在修改的文件中注明修改；不得收取任何费用；不得以其他条款再许可。
+
+三、商业使用
+
+任何商业使用都必须事先取得权利人的书面商业授权，并支付适用的许可费用。
+申请方式见 COMMERCIAL.md，联系邮箱：<联系邮箱>。
+未取得书面授权的商业使用不在本协议授权范围内。
+
+四、保留权利
+
+本协议未明确授予的一切权利均由权利人保留。权利人可以按其他条款另行授权本软件。
+
+五、终止
+
+你违反本协议任何条款时，本协议授予你的权利自动终止。终止后你须停止使用本软件，
+并删除你持有的全部副本。
+
+六、第三方素材
+
+本软件附带的第三方素材（包括 GSAP 动画引擎和内置字体）不因本协议而获得重新授权，
+仍分别适用其各自的许可条款，详见 THIRD_PARTY_NOTICES.md。
+
+七、免责声明
+
+本软件按“原样”提供，不附带任何明示或默示的保证，包括但不限于适销性、
+特定用途适用性和不侵权的保证。在任何情况下，权利人均不对因本软件或其使用
+引起的任何索赔、损害或其他责任承担责任。
+
+──────────────────────────────────────────────
+English translation (for reference only)
+
+1. Definitions
+   "The Software" means all content in this repository created by the rights holder,
+   including code, templates, styles, the motion library, scripts, documentation,
+   sample scripts, evaluation cases and demo images. Third-party materials are not
+   part of the Software (see section 6).
+   "Personal non-commercial use" means use by an individual for personal learning,
+   research, hobby or non-profit personal creation, where neither the Software nor
+   anything made with it earns any direct or indirect financial benefit.
+   "Commercial use" means any other use, including: use by or for companies,
+   organizations, studios, teams, employees, contractors or client projects; paid
+   services, commercial content, marketing, advertising, branding, sales or promotion;
+   videos or visuals made with the Software that earn income through ads, platform
+   revenue sharing, paid content, sponsorships or brand deals; and integrating the
+   Software into products, services, workflows or other software, or offering services
+   based on it. Internal use, trials, not yet being profitable, or not charging clients
+   separately does not make a use personal and non-commercial.
+
+2. Personal non-commercial license
+   Subject to this license, you get a free, worldwide, non-exclusive, non-transferable,
+   non-sublicensable license, for personal non-commercial use only, to: use, copy and
+   modify the Software; make videos and visuals for your own personal non-commercial
+   content; and share the Software, modified or not, non-commercially, provided you keep
+   this license and the copyright notice intact, mark modified files, charge nothing,
+   and do not sublicense it under other terms.
+
+3. Commercial use
+   Any commercial use requires prior written commercial authorization from the rights
+   holder and payment of the applicable license fee. See COMMERCIAL.md; contact:
+   <联系邮箱>.
+
+4. Reserved rights
+   All rights not expressly granted are reserved. The rights holder may license the
+   Software under other terms.
+
+5. Termination
+   Your rights terminate automatically if you breach this license. You must then stop
+   using the Software and delete all copies you hold.
+
+6. Third-party materials
+   Third-party materials shipped with the Software (including the GSAP animation engine
+   and the bundled fonts) are not relicensed by this license and remain under their own
+   terms; see THIRD_PARTY_NOTICES.md.
+
+7. Disclaimer
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+   PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE RIGHTS HOLDER BE LIABLE
+   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM THE SOFTWARE OR ITS USE.

@@ -1,6 +1,7 @@
 ---
 name: eian-riso-broll
 description: 孔版双色（Riso）风格的信息 B-roll 动画。给一份口播逐字稿（可附 SRT 字幕），挑出适合做成信息动画的段落，套用 10 个现成模板（数字冲击 / 流程 / 收敛 / 前后对比 / 链接密度 / 金句 / 多选一 / 误区翻转 / 章节卡 / 截图锚点），先出静态样帧确认，再渲染 1080×1920 竖屏 mp4（无音轨；可出透明底 ProRes）。用户说「Riso 动画」「孔版风 B-roll」「eian-riso-broll」「逐字稿做信息动画」「口播配信息动画」「信息图 B-roll」，或给出逐字稿、想要高对比杂志感的竖屏信息动画时，使用此 skill。纯 HTML/CSS/GSAP 本机渲染，不调用图片生成模型；只做无角色的信息动画 —— 情绪独白、隐喻、软件操作演示不做，建议归实拍 / 角色动画 / 录屏。
+license: 个人非商用免费；商业使用需事先取得书面授权（见 LICENSE、COMMERCIAL.md）
 compatibility: Node ≥ 22、Chrome 或 Chromium、ffmpeg/ffprobe。字体随 skill 分发（思源宋体 / 思源黑体 / Oswald / JetBrains Mono），macOS、Linux、Windows 渲出来一样。首次使用先跑 node scripts/check_setup.mjs。
 ---
 

@@ -94,6 +94,12 @@ pip install fonttools brotli
 python3 tools/build_fonts.py <上游字体目录>     # 需要哪些上游文件见脚本开头的说明
 ```
 
+## 贡献的授权
+
+本仓库采用双轨授权（个人非商用免费 + 商业授权，见 [LICENSE](LICENSE)）。向本仓库提交代码、文档或其他内容（issue 里的补丁、pull request 等），即表示你确认有权提交这些内容，并同意权利人可以按本仓库的个人使用许可协议和商业授权条款使用、修改、再授权这些内容。
+
+By contributing, you confirm you have the right to submit your contribution and agree that the rights holder may use, modify and license it under both the personal use license and commercial licenses.
+
 ## 行为评测
 
 [evals/evals.json](evals/evals.json) 描述 Claude 用这个 skill 时应该怎么做（选段停下等确认、不编数据、文字太长时删字而不是缩字……）。改了 `SKILL.md` 或 `references/` 之后，用这些用例让 Claude 实际跑一遍，对照 assertions 检查。

@@ -139,9 +139,11 @@ node scripts/render.mjs "$P/compositions/01-number.html" --alpha   # 透明底�
 
 代码结构、自测和维护脚本见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
-## 致谢与许可
+## 许可
 
-- 本仓库的代码与文档：见 [LICENSE](LICENSE)。
-- 动画引擎 [GSAP](https://gsap.com)（`assets/gsap.min.js`）：GreenSock 标准许可，可免费商用，不受本仓库许可证覆盖。
-- 内置字体：思源宋体、思源黑体（Noto Serif / Sans SC）、Oswald、JetBrains Mono，均为 SIL Open Font License，详见 [assets/fonts/](assets/fonts/)。
-- 三道确认门、只摘原话这些工作流上的想法，受到 gbro-collage-info 的启发。
+- **个人非商用**：按 [eian-riso-broll 个人使用许可协议 1.0](LICENSE) 免费使用。
+- **商业使用**：必须事先取得书面商业授权，并支付许可费用。申请方式见 [商业授权](COMMERCIAL.md)，联系邮箱 `<联系邮箱>`。
+
+公司、机构、工作室、团队、雇员、外包或客户项目使用，以及收费服务、商业内容、广告、带货、推广，或者用它做的视频通过流量分成、付费内容、赞助获得收入，都属于商业使用。内部使用、试用、尚未盈利或没有单独向客户收费，不会因此变成个人非商用。
+
+第三方素材（GSAP 动画引擎、内置字体）不因本仓库的许可声明而获得重新授权，详见 [第三方声明](THIRD_PARTY_NOTICES.md)。

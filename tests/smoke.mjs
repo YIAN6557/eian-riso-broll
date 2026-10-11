@@ -63,9 +63,9 @@ if (ALPHA) step('透明底 ProRes（' + names[0] + '）', 'render.mjs', [comps[0
 
 // 时长脚本：语速估算 + 在一份 SRT 里定位句子
 const srt = join(OUT, 'smoke.srt');
-writeFileSync(srt, '1\n00:00:01,000 --> 00:00:03,000\n第一句字幕用来测试\n\n2\n00:00:03,000 --> 00:00:06,000\n以前要 8 分钟，现在 30 秒\n');
-step('时长：语速估算', 'timing.mjs', ['以前要 8 分钟，现在 30 秒']);
-step('时长：SRT 定位', 'timing.mjs', ['--srt', srt, '以前要8分钟，现在30秒']);
+writeFileSync(srt, '1\n00:00:01,000 --> 00:00:03,000\n第一句字幕用来测试\n\n2\n00:00:03,000 --> 00:00:06,000\n做一张信息图，以前要 40 分钟，现在 2 分钟\n');
+step('时长：语速估算', 'timing.mjs', ['做一张信息图，以前要 40 分钟，现在 2 分钟']);
+step('时长：SRT 定位', 'timing.mjs', ['--srt', srt, '以前要40分钟，现在2分钟']);
 
 const failed = steps.filter(s => !s[0]).length;
 console.log('\n━━ 结果');

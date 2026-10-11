@@ -1,114 +1,147 @@
-# eian-riso-broll · 孔版双色信息 B-roll
+# eian-riso-broll
 
-给一份口播逐字稿，挑出适合做成信息动画的段落，产出 1080×1920 竖屏 mp4（只有画面，不带音轨）。纯 HTML/CSS/GSAP，本机 Chrome 逐帧渲染，**零 npm 依赖、不调用任何图片生成模型**。
+**孔版印刷风格的口播信息动画 · 一个 Claude Code skill**
 
-| 数字冲击 | 收敛归类 | 前后对比（真实比例） | 金句（满版深底） |
-|---|---|---|---|
+中文 · [English](README.en.md)
+
+把口播逐字稿交给 Claude，它会挑出值得配画面的句子，做成孔版双色风格的竖屏信息动画（1080×1920 mp4），拖进剪辑软件就能用。
+
+| 数字冲击 | 收敛归类 | 前后对比 | 金句 |
+|:---:|:---:|:---:|:---:|
 | ![](demo/number.gif) | ![](demo/converge.gif) | ![](demo/compare.gif) | ![](demo/quote.gif) |
 
-> GIF 已压缩（为了体积关掉了纸纹呼吸和慢推镜）；成片是 30fps H.264，不带音轨（声音统一在剪辑台处理）。
+一段 1 分钟的口播做出来的 10 条动画（每条的最后一帧）：
 
-一段 1 分钟的口播 → 10 条信息动画，10 个模板各用一次（末帧，暂停即海报）：
+![一段口播做出来的 10 条动画](demo/sheet.jpg)
 
-![](demo/sheet.jpg)
+> 上面的文案来自一段[虚构的示例逐字稿](examples/demo-script.md)，屏幕上的每个字都摘自原话。GIF 为了体积做了压缩，成片是 30fps 高清 mp4。
 
-文案来自一段**虚构的示例逐字稿**：[examples/demo-script.md](examples/demo-script.md)（含分镜表和配套字幕）。屏幕上的每个字都摘自原话。
+## 适合谁
 
-## 风格
+做口播、知识分享类短视频的人。你在镜头前讲，观众耳朵在听；这个 skill 负责让观众**同时看见**你说的那个数字、那个对比、那个结论。
 
-一张纸，两种专色油墨：
+- **你给**：一份逐字稿（有 SRT 字幕更好）。
+- **你拿到**：每个画面一条 mp4（只有画面、没有声音），一张分镜表，一张全部画面的总览图。需要叠在人像上时，还可以出透明底版本。
 
-- **A 墨**（深）负责所有要读的字和结构线；**B 墨**（荧光）一帧只做一处重点。
-- 两墨正片叠底：重叠处自动出现第三色。
-- B 版整版 3px 套印错位；所有“渐变”都用网点。
-- 动画就是“这张海报被印出来的过程”：网点显影、套印归位、盖章砸落、滚筒刷过、铅字升起。
-- 思源宋体 Heavy 做标题，Oswald 做数字（字体随 skill 分发，任何系统渲出来一样）。四组色本：墨蓝×荧光粉、深青×橙、藏青×朱红、墨黑×明黄。
+## 为什么用它
 
-## 和常见“AI 信息动画”不一样的地方
-
-| | |
-|---|---|
-| **模板，不是手写** | 10 个可直接渲染的模板，只改 `DATA`；版面按字数自动排（`fit` / 按字形墨迹对齐） |
-| **样帧 = 成片末帧** | 同一个文件、同一个 seek 渲出来，结构上一致 |
-| **自动质检** | 安全区、短视频右侧按钮栏、字号、对比度、文字互压、成片时长与尺寸；输出带红框的叠层图 |
-| **时长跟着口播** | `timing.mjs` 从 SRT 里找到那句话的入点出点，或按语速估算 |
-| **不编内容** | 屏幕字只从原话里摘；台词没给的类别名留空；没有真截图就只放“待替换”占位 |
+- **像一个系列，不像拼凑的 PPT**：10 个模板共用同一套纸张、油墨、字体和版头，放在一期视频里风格统一。
+- **画面跟着口播走**：每条动画的长度按你说那句话的时长来定；有字幕时精确到入点出点。
+- **不替你编内容**：屏幕上的字只从你说的话里摘，没说的类别名、数据一律不补；你没给截图，就只放“待替换”占位，不画假界面。
+- **先确认再出片**：先给你一张分镜表，再给你看每条的样帧，你点头了才渲染成片，改起来不费劲。
+- **为竖屏短视频设计**：自动避开平台顶栏、底部字幕区和右侧点赞按钮栏，每条都会自动检查字号、对比度、有没有出画。
+- **免费、离线、本机渲染**：不调用任何图片生成模型，不需要联网；字体已经内置，Mac、Windows、Linux 渲出来一模一样。
 
 ## 安装
 
+需要先装好这几样：
+
+- [Claude Code](https://claude.com/claude-code)
+- [Node.js](https://nodejs.org) 22 或更新
+- Chrome（Edge 或 Chromium 也可以）
+- [ffmpeg](https://ffmpeg.org)（macOS 可以用 Homebrew：`brew install node ffmpeg`）
+
+然后把 skill 放进 Claude Code 的 skills 目录，跑一次环境自检：
+
 ```bash
-git clone <本仓库> ~/.claude/skills/eian-riso-broll
+git clone https://github.com/YIAN6557/eian-riso-broll.git ~/.claude/skills/eian-riso-broll
 node ~/.claude/skills/eian-riso-broll/scripts/check_setup.mjs
 ```
 
-依赖：Node ≥ 22、Chrome/Chromium、ffmpeg。字体已经放在 `assets/fonts/`，不用另装。
+看到“全部通过”就可以用了。Windows 上把 `~/.claude/skills` 换成 `%USERPROFILE%\.claude\skills`。
 
-## 使用
+## 怎么用
 
-对 Claude 说：
+直接跟 Claude 说就行，比如：
 
-- 「用 eian-riso-broll 给这期逐字稿做信息动画：……」→ 选段表 → 样帧 → 成片
-- 「把这句做成 Riso 动画，直接出片：『做一张信息图，以前要 40 分钟，现在 2 分钟』」
+- **整期视频**：「用 eian-riso-broll 给这期逐字稿做信息动画：……（贴上逐字稿）」
+- **只做一句**：「把这句做成 Riso 动画，直接出片：『做一张信息图，以前要 40 分钟，现在 2 分钟』」
+- **对准口播时长**：「这是字幕文件 口播.srt，帮我把第 3 段做成动画，时长和口播对上」
+- **叠在人像上**：「上一条给我一个透明背景的版本」
 
-手动：
+做整期视频时，Claude 会分三步走，每一步都停下来等你确认：
+
+1. **分镜表**：哪句话配什么画面、屏幕上写什么字、多长时间。删哪条、换哪条，在这一步说最省事。
+2. **样帧**：每条动画的最后一帧拼成一张总览图给你看。构图、文字不满意，在这一步改。
+3. **成片**：渲染出 mp4，再自动检查一遍时长和尺寸。
+
+如果只给一句话，或者说了“直接出片”，Claude 会合并步骤直接做，但检查一步都不会少。
+
+成片默认放在 `~/eian-riso-broll-projects/<项目名>/renders/`，每条一个 mp4。
+
+## 10 个模板
+
+编号和上面总览图的顺序一一对应。
+
+| # | 模板 | 什么时候用 | 示例里的那句话 |
+|---|---|---|---|
+| 01 | 误区翻转 `versus` | “很多人以为……其实……” | 好看的动效得请人来做 → 一份逐字稿就够了 |
+| 02 | 章节卡 `title` | 第一部分、第二部分……；开场标题 | 第一部分，先看效果 |
+| 03 | 数字冲击 `number` | 一个扛得住整个画面的数字 | 12 处值得配画面的信息 |
+| 04 | 前后对比 `compare` | 同一件事的两个量，按真实比例画条 | 以前 40 分钟，现在 2 分钟 |
+| 05 | 收敛归类 `converge` | 很多 → 很少 | 30 多套工程 → 4 类 |
+| 06 | 连接密度 `network` | 数量 + 关系、连接、规模感 | 1800 条画面，放在一起是一个系列 |
+| 07 | 多选一 `focus` | 几个并列项里突出一个 | 四组色本，70% 的视频用第一组 |
+| 08 | 流程步骤 `steps` | 2–6 个有先后顺序的步骤 | 只有 3 步：选段、出样帧、渲成片 |
+| 09 | 截图锚点 `shot` | 观众得看见原件才信（后台、原帖、表格） | 上周的分镜表（截图由你提供） |
+| 10 | 金句 `quote` | 整期的钩子或结论，深色满版 | 画面要跟着你说的话走 |
+
+## 四组配色
+
+| 配色 | 气质 |
+|---|---|
+| 墨蓝 × 荧光粉（默认） | 最有孔版味，适合知识、科技 |
+| 深青 × 橙 | 温暖，适合方法论、生活 |
+| 藏青 × 朱红 | 适合观点、误区、提醒 |
+| 墨黑 × 明黄 | 克制，适合严肃话题、数据、财经 |
+
+一期视频最多用两组：正文一组，开头和结尾一组，首尾呼应。想换颜色，直接跟 Claude 说就行。
+
+## 它不做什么
+
+- **不配声音**：成片只有画面，配音、音效、BGM 都留在剪辑软件里处理。
+- **不做非信息类画面**：情绪独白、讲故事、打比方、软件操作演示，更适合实拍、角色动画或录屏，Claude 会直接告诉你。
+- **不画假截图**：需要展示原件的地方，请提供真实截图。
+- **目前只做竖屏**：1080×1920。
+
+## 常见问题
+
+**渲染要多久？**
+在 M 系列 Mac 上，5 秒的一条大约 15–20 秒。样帧几秒一张。
+
+**能自己改文字吗？**
+能。每条动画是项目里 `compositions/` 下的一个 html 文件，用浏览器打开就能预览（循环播放）。改文件顶部的 `DATA`，再让 Claude 重新渲染就行。
+
+**字太多放不下怎么办？**
+Claude 会从原话里删字，而不是把字号缩小。手机上看，字太小等于没有。
+
+**为什么有的字显示成别的字体？**
+内置字体收录了 6763 个常用汉字，极少数生僻字会用系统字体代替。
+
+**提示找不到 Chrome？**
+设置环境变量 `CHROME=<浏览器程序的路径>` 再试；`check_setup.mjs` 会告诉你具体原因。
+
+## 不经过 Claude，手动用
 
 ```bash
-P=$(node scripts/new_project.mjs 2026-10-07-第12期)
-cp templates/number.html $P/compositions/01-number.html   # 改 DATA
-node scripts/render.mjs $P/compositions/*.html --still      # 样帧 + contact sheet
-node scripts/qa.mjs     $P/compositions/*.html              # 质检
-node scripts/render.mjs $P/compositions/*.html              # 成片
-node scripts/render.mjs $P/compositions/01-number.html --alpha # 透明底 ProRes 4444
+cd ~/.claude/skills/eian-riso-broll
+P=$(node scripts/new_project.mjs 第12期)                    # 新建项目，打印项目路径
+cp templates/number.html "$P/compositions/01-number.html"    # 复制模板，改顶部的 DATA
+node scripts/render.mjs "$P"/compositions/*.html --still     # 样帧 + 总览图
+node scripts/qa.mjs     "$P"/compositions/*.html             # 自动检查
+node scripts/render.mjs "$P"/compositions/*.html             # 成片 mp4
+node scripts/render.mjs "$P/compositions/01-number.html" --alpha   # 透明底（ProRes 4444）
 ```
 
-浏览器直接打开任意 composition 即可预览（循环播放，`?t=end` 定格）。
+更多细节见 [references/production.md](references/production.md)。
 
-## 结构
+## 想改这个 skill？
 
-每个文件只负责一件事。
+代码结构、自测和维护脚本见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
-**给 Claude 读的**（流程和规则）
+## 致谢与许可
 
-| 文件 | 负责 |
-|---|---|
-| `SKILL.md` | 入口：什么时候用、三道门流程、不可违反的规则、常见坑 |
-| `references/copy.md` | 选段与文案：哪些段落值得做、怎么从原话里摘屏幕字、时长 |
-| `references/templates.md` | 10 个模板的用途、画面故事、DATA 字段、选择树 |
-| `references/style.md` | 视觉系统：纸、两墨、叠印、网点、色本、版面、字体、禁区 |
-| `references/motion.md` | 动效原则 + `riso.js` API + 写新模板的检查单 |
-| `references/production.md` | 渲染、质检、交付、排错 |
-
-**在浏览器里跑的**（每条动画就是一个网页）
-
-| 文件 | 负责 |
-|---|---|
-| `templates/*.html` | 10 个模板。每个只有三块：`DATA`（给使用者改）、版面、时间轴 |
-| `assets/riso.css` | 样式：色本、字体、油墨 / 网点 / 纸纹部件 |
-| `assets/riso.js` | 动效库：时间轴 helper、排版工具（`setup` / `text` / `fit` / `markUnder` / `inkBox`）、版面安全区 `ZONE`（唯一来源）、版面自检 |
-| `assets/gsap.min.js` | GSAP 3 动画引擎（第三方，GreenSock 标准许可） |
-| `assets/fonts/` | 随 skill 分发的字体（OFL）及许可证 |
-
-**命令行**（全部是 Node，零 npm 依赖，macOS / Linux / Windows 通用）
-
-| 文件 | 负责 |
-|---|---|
-| `scripts/render.mjs` | 逐帧渲染：mp4 / 透明底 mov / 样帧 / contact sheet |
-| `scripts/qa.mjs` | 质检：版面（安全区、字号、对比度、互压）+ 成片（时长、尺寸），出叠层图 |
-| `scripts/timing.mjs` | 口播时长：SRT 精确定位 / 按语速估算 |
-| `scripts/new_project.mjs` | 新建一个自包含的视频项目 |
-| `scripts/check_setup.mjs` | 环境自检 |
-| `scripts/lib/chrome.mjs` | headless Chrome 驱动（找浏览器、启动、截图） |
-| `scripts/lib/project.mjs` | 项目目录：skill 根路径、建项目、拷模板 |
-| `scripts/lib/media.mjs` | ffmpeg / ffprobe：拼 contact sheet、读成片参数 |
-| `scripts/lib/args.mjs` | 命令行参数解析 |
-
-**维护用**
-
-| 文件 | 负责 |
-|---|---|
-| `tests/smoke.mjs` | 一键自测：全部模板 → 样帧 → 成片 → 质检 → 时长脚本 |
-| `evals/evals.json` | 行为评测：Claude 用这个 skill 时该怎么做 |
-| `examples/` | 虚构示例逐字稿 + 分镜表 + 字幕；模板默认 DATA 和 demo 都来自它 |
-| `tools/build_demo.mjs` | 重新生成 `demo/` |
-| `tools/build_fonts.py` | 从上游开源字体重新生成 `assets/fonts/` |
-| `demo/` | README 用的 GIF 和末帧总览 |
+- 本仓库的代码与文档：见 [LICENSE](LICENSE)。
+- 动画引擎 [GSAP](https://gsap.com)（`assets/gsap.min.js`）：GreenSock 标准许可，可免费商用，不受本仓库许可证覆盖。
+- 内置字体：思源宋体、思源黑体（Noto Serif / Sans SC）、Oswald、JetBrains Mono，均为 SIL Open Font License，详见 [assets/fonts/](assets/fonts/)。
+- 三道确认门、只摘原话这些工作流上的想法，受到 gbro-collage-info 的启发。

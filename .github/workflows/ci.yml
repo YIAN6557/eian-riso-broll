@@ -1,0 +1,64 @@
+name: Package checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Smoke test · Ubuntu · all templates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install --yes ffmpeg
+      - name: Allow Chrome's sandbox (Ubuntu 24.04 restricts user namespaces)
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - name: Check environment
+        run: node scripts/check_setup.mjs
+      - name: Smoke test
+        run: node tests/smoke.mjs --out "$RUNNER_TEMP/smoke"
+      - name: Upload stills and QA overlays
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-ubuntu
+          path: |
+            ${{ runner.temp }}/smoke/plates
+            ${{ runner.temp }}/smoke/qa
+          if-no-files-found: ignore
+
+  cross-platform:
+    name: Smoke test · ${{ matrix.os }} · sample templates
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Install ffmpeg (macOS)
+        if: runner.os == 'macOS'
+        run: brew install ffmpeg
+      - name: Install ffmpeg (Windows)
+        if: runner.os == 'Windows'
+        run: choco install ffmpeg --yes --no-progress
+      - name: Check environment
+        run: node scripts/check_setup.mjs
+      - name: Smoke test
+        run: node tests/smoke.mjs number quote --out "${{ runner.temp }}/smoke"

@@ -1,0 +1,83 @@
+<!doctype html>
+<!-- 模板 · versus · 误区 vs 真相 / 以前 vs 现在（观点翻转）
+     用于：台词先立一个常见认知，再推翻它（很多人以为…其实…）。
+     画面：上半“以为”的那句先印出来 → 一笔 A 墨划掉 → 整块退网成平网；
+     中线刷开 → 下半“其实”的那句升起，关键词落 B 墨压条，套印“咔”一下归位。 -->
+<html lang="zh-CN"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../assets/riso.css">
+<script src="../assets/gsap.min.js"></script>
+<script src="../assets/riso.js"></script>
+<style>
+  .chip  { position:absolute; left:var(--gutter); padding:10px 18px 12px; font:600 40px/1 var(--sans); letter-spacing:.06em }
+  #ta    { border:4px solid var(--a) }
+  #tb    { color:var(--a) }
+  #tbb   { left:var(--gutter); transform-origin:left center }
+  #blockA{ inset:0; --td:9px }
+  #sa, #sb { position:absolute; left:var(--gutter) }
+  .strike{ position:absolute; height:12px; transform-origin:left center }
+  #mid   { left:var(--gutter); right:var(--gutter); height:4px; transform-origin:left center }
+  #mark  { transform-origin:left center }
+</style></head>
+<body>
+<div id="frame"><div id="stage">
+  <div class="mast t"><span class="tag" id="m1"></span><span id="m2"></span></div>
+  <div id="blockA" class="tint">
+    <div id="ta" class="chip a t"></div>
+    <div id="sa" class="hd a t"></div>
+  </div>
+  <div id="mid" class="fill-a"></div>
+  <div id="tbb" class="fill-b"></div>
+  <div id="tb" class="chip a t"></div>
+  <div id="mark" class="fill-b"></div>
+  <div id="sb" class="hd a t"></div>
+  <canvas id="floor" class="tone b"></canvas>
+</div></div>
+<script>
+const DATA = {
+  palette:  'pal-red',
+  mast:     ['01 · 误区', '01 / 10'],
+  before:   { tag: '以为', text: '好看的动效\n得请人来做' },    // 常见认知（原话）
+  after:    { tag: '其实', text: '一份逐字稿\n就[够了]' },        // 推翻它的那句（原话）；[ ] = 压条
+  duration: 6.5,
+};
+
+Riso.setup(DATA);
+
+Riso.comp({ duration: DATA.duration, seed: 88 }, C => {
+  // ── 版面：上下两半，各自一个标签 + 一段宋体 ──
+  ta.textContent = DATA.before.tag; tb.textContent = DATA.after.tag;
+  ta.style.top = '300px';
+  Riso.text(sa, DATA.before.text); Riso.fit(sa, { width: 936, max: 104, min: 68 });
+  sa.style.top = Riso.box(ta).bottom + 30 + 'px';
+  const strikes = [...sa.querySelectorAll('.ln')].map(l => {
+    const a = Riso.box(l.firstElementChild), b = Riso.box(l.lastElementChild);
+    const s = document.createElement('div');
+    s.className = 'strike fill-a';
+    Object.assign(s.style, { left: a.left - 10 + 'px', width: b.right - a.left + 20 + 'px', top: (a.top + a.bottom) / 2 + 4 + 'px' });
+    blockA.appendChild(s); return s;
+  });
+  const midY = Riso.box(sa).bottom + 64;
+  mid.style.top = midY + 'px';
+  tb.style.top = midY + 64 + 'px';
+  Object.assign(tbb.style, { top: tb.style.top, width: tb.offsetWidth + 'px', height: tb.offsetHeight + 'px' });
+  Riso.text(sb, DATA.after.text); Riso.fit(sb, { width: 936, max: 132, min: 80 });
+  sb.style.top = Riso.box(tb).bottom + 30 + 'px';
+  const hasMark = Riso.markUnder(mark, sb);
+
+  // ── 时间轴 ──
+  C.camera().boil().floor('#floor');
+  C.roll('.mast', 0, { dur: .5 });
+  C.roll(ta, .05, { dur: .4 });
+  const saEnd = C.rise(sa, .2, { stagger: .03 });
+  C.bar(strikes, saEnd + .15, { dur: .32, stagger: .14, ease: 'power3.in' });
+  const tOut = saEnd + .15 + .32 + .14 * (strikes.length - 1) + .2;
+  C.tl.fromTo(blockA, { '--td': '9px' }, { '--td': '4.2px', duration: .55, ease: 'power2.inOut', immediateRender: false }, tOut);
+  C.bar(mid, tOut + .3, { dur: .5 });
+  C.bar(tbb, tOut + .55, { dur: .3 });
+  C.roll(tb, tOut + .62, { dur: .3 });
+  const sbEnd = C.rise(sb, tOut + .75, { stagger: .04 });
+  if (hasMark) C.bar(mark, sbEnd + .1, { dur: .45 });
+  C.register(sbEnd + .7);
+});
+</script>
+</body></html>

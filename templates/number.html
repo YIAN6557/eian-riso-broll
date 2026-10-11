@@ -1,0 +1,71 @@
+<!doctype html>
+<!-- 模板 · number · 数字冲击
+     用于：台词里有一个能扛住整帧的数字（12 处、90%、3 年）。
+     画面：超大数字（B 墨，网点显影 + 计数）→ 单位盖章叠印在数字脚上 → 一到两行论点升起 → 重点词荧光压条。
+     只改 DATA；版面会按字数自动缩放。 -->
+<html lang="zh-CN"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../assets/riso.css">
+<script src="../assets/gsap.min.js"></script>
+<script src="../assets/riso.js"></script>
+<style>
+  #num   { left:58px; top:262px; }
+  #unit  { right:var(--gutter); }
+  #say   { left:var(--gutter); }
+  #mark  { transform-origin:left center; }
+</style></head>
+<body>
+<div id="frame"><div id="stage">
+  <div class="mast t"><span class="tag" id="m1"></span><span id="m2"></span></div>
+  <div id="num"  class="num b t" data-overprint></div>
+  <div id="mark" class="fill-b"></div>
+  <div id="unit" class="hd a t" data-overprint></div>
+  <div id="say"  class="hd a t"></div>
+  <canvas id="floor" class="tone b"></canvas>
+</div></div>
+<script>
+const DATA = {
+  palette:  'pal-blue',
+  mast:     ['03 · 信息量', '03 / 10'],   // 左：段号 · 主题词；右：序号
+  number:   12,                            // 只用逐字稿里出现的数字
+  prefix:   '',  suffix: '',               // 比如 suffix: '%'
+  comma:    false,                         // ≥10000 时建议 true
+  unit:     '处信息',                       // ≤ 4 字
+  say:      '值得配[画面]',                 // ≤ 2 行，每行 ≤ 8 字；[ ] = 荧光压条
+  duration: 5.5,
+};
+
+Riso.setup(DATA);
+const fmt = v => DATA.prefix + (DATA.comma ? Math.round(v).toLocaleString('en-US') : Math.round(v)) + DATA.suffix;
+
+Riso.comp({ duration: DATA.duration, seed: 11 }, C => {
+  // ── 版面 ──
+  num.textContent = fmt(DATA.number);
+  Riso.fit(num, { width: 964, max: 640, min: 300 });
+  num.style.top = num.offsetTop + (300 - Riso.inkBox(num).top) + 'px';    // 数字墨迹顶 = 300
+  const numInk = Riso.inkBox(num);
+
+  unit.textContent = DATA.unit;
+  Riso.fit(unit, { width: 520, max: 132, min: 88 });
+  let u = Riso.inkBox(unit);
+  unit.style.top = unit.offsetTop + (numInk.bottom - (u.bottom - u.top) * .42 - u.top) + 'px';   // 单位压住数字脚 → 叠印出第三色
+  u = Riso.inkBox(unit);
+  if (u.bottom > 880) { unit.style.right = '160px'; u = Riso.inkBox(unit); }   // 数字很高时单位会落进右侧按钮栏（y>880），收到 x 920 以内
+
+  Riso.text(say, DATA.say);
+  Riso.fit(say, { width: 936, max: 112, min: 72 });
+  say.style.top = (u.bottom + 84) + 'px';
+
+  const hasMark = Riso.markUnder(mark, say, { pad: 10 });
+
+  // ── 时间轴 ──
+  C.camera().boil().floor('#floor');
+  C.roll('.mast', 0, { dur: .5 });
+  C.print(num, .05, { dur: .66 });
+  C.count(num, .05, { to: DATA.number, dur: 1.05, fmt });
+  C.register(.72);
+  const land = C.stamp(unit, 1.02, { rot: -6 });
+  const said = C.rise(say, land + .28);
+  if (hasMark) C.bar(mark, said + .12, { dur: .5 });
+});
+</script>
+</body></html>

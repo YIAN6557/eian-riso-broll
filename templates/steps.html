@@ -1,0 +1,95 @@
+<!doctype html>
+<!-- 模板 · steps · 流程拆解
+     用于：台词给出了 2–6 个有顺序的步骤（先…再…然后…最后…）。
+     画面：标题里的步数是 B 墨大数字 → 一行一步，像排印好的目录表：细线刷出 → 序号网点显影 → 步骤名升起，一步接一步。
+     最后一步（或 DATA.key 指定的那步）落 B 墨压条，作为这一段的落点。 -->
+<html lang="zh-CN"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../assets/riso.css">
+<script src="../assets/gsap.min.js"></script>
+<script src="../assets/riso.js"></script>
+<style>
+  #title { left:var(--gutter); display:flex; align-items:baseline; gap:.12em }
+  #title .num { font-size:1.9em; line-height:.7 }
+  #rows  { inset:0 }
+  #ghost { right:-40px; font-size:1180px; line-height:.74 }
+  .row   { position:absolute; left:var(--gutter); right:var(--gutter); height:var(--rowh) }
+  .row .rule { position:absolute; left:0; right:0; top:0; height:4px; transform-origin:left center }
+  .row .ix   { position:absolute; left:0; font-size:150px }
+  .row .name { position:absolute; left:220px }
+  .row .mark { position:absolute; transform-origin:left center }
+</style></head>
+<body>
+<div id="frame"><div id="stage">
+  <div class="mast t"><span class="tag" id="m1"></span><span id="m2"></span></div>
+  <div id="title" class="t"></div>
+  <div id="ghost" class="num b tint"></div>
+  <div id="rows"></div>
+  <canvas id="floor" class="tone b"></canvas>
+</div></div>
+<script>
+const DATA = {
+  palette:  'pal-blue',
+  mast:     ['08 · 流程', '08 / 10'],
+  title:    ['只有', 3, '步'],                 // [前半句, 数字, 后半句]，数字 = 步数
+  steps:    ['选段', '出样帧', '渲成片'],        // 2–6 步，每步 ≤ 5 字，只用原话里的动词名词
+  key:      -1,                               // 落点那一步（-1 = 最后一步）
+  duration: 4.5,
+};
+
+Riso.setup(DATA);
+
+Riso.comp({ duration: DATA.duration, seed: 22 }, C => {
+  // ── 版面 ──
+  const n = DATA.steps.length, key = DATA.key < 0 ? n + DATA.key : DATA.key;
+  title.innerHTML = `<span class="hd a t" id="t1"></span><span class="num b t" id="tn" data-overprint></span><span class="hd a t" id="t2"></span>`;
+  Riso.text(t1, DATA.title[0]); tn.textContent = DATA.title[1]; Riso.text(t2, DATA.title[2]);   // 拆成单字，rise() 才有东西可升
+  title.style.fontSize = '118px'; t1.classList.add('hd-l'); t2.classList.add('hd-l');
+  title.style.top = '300px';
+  const top0 = title.offsetTop + title.offsetHeight + 70, avail = 1300 - top0;
+  const rowh = Math.min(200, Math.floor(avail / n));
+  document.documentElement.style.setProperty('--rowh', rowh + 'px');
+  const nameSize = Math.min(96, rowh * .52);
+
+  DATA.steps.forEach((s, i) => {
+    const r = document.createElement('div');
+    r.className = 'row';
+    r.style.top = top0 + i * rowh + 'px';
+    r.innerHTML = `<div class="rule fill-a"></div><div class="mark fill-b"></div>
+      <div class="ix num b t" data-overprint>${String(i + 1).padStart(2, '0')}</div><div class="name hd a t"></div>`;
+    rows.appendChild(r);
+    const ix = r.querySelector('.ix'), nm = r.querySelector('.name');
+    ix.style.fontSize = Math.min(150, rowh * .78) + 'px';
+    Riso.text(nm, i === key ? `[${s}]` : s);
+    Riso.fit(nm, { width: 716, max: nameSize, min: 56 });
+    const mid = rowh / 2 + 6;
+    const ib = Riso.inkBox(ix);
+    ix.style.top = ix.offsetTop + (top0 + i * rowh + mid - (ib.top + ib.bottom) / 2) + 'px';
+    nm.style.top = mid - nm.offsetHeight / 2 + 'px';
+    const mk = r.querySelector('.mark');
+    if (i === key) Object.assign(mk.style, { left: '206px', width: nm.offsetWidth + 28 + 'px', top: mid + 2 + 'px', height: nm.offsetHeight * .36 + 'px' });
+    else mk.style.display = 'none';
+  });
+
+  ghost.textContent = DATA.title[1];
+  ghost.style.top = ghost.offsetTop + (top0 - 30 - Riso.inkBox(ghost).top) + 'px';   // 网点淡印的大数字，垫在目录表右侧
+
+  // ── 时间轴 ──
+  C.camera().boil().floor('#floor');
+  C.roll('.mast', 0, { dur: .5 });
+  C.rise('#t1, #t2', .1);
+  C.print('#tn', .25, { dur: .55 });
+  C.register(.62);
+  C.print('#ghost', .3, { dur: 1.2, to: 3.1 });
+  const each = Math.min(.42, 2.3 / n);
+  let t = 1.0;
+  [...document.querySelectorAll('.row')].forEach((r, i) => {
+    C.bar(r.querySelector('.rule'), t, { dur: .5 });
+    C.print(r.querySelector('.ix'), t + .08, { dur: .34 });
+    C.rise(r.querySelector('.name'), t + .1, { stagger: .028, dur: .5 });
+    t += each;
+  });
+  const km = document.querySelectorAll('.row')[key].querySelector('.mark');
+  C.bar(km, t + .25, { dur: .5 });
+});
+</script>
+</body></html>

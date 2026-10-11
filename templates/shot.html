@@ -1,0 +1,83 @@
+<!doctype html>
+<!-- 模板 · shot · 截图锚点（真实界面 / 原文 / 数据来源）
+     用于：观众需要“看见原件”才信的那一句（分镜表、后台数据、原帖截图）。
+     画面：裁切标记先画出版位 → 截图从上往下刷入，以 A 墨双色调 + 网点显影印出来 →
+     （只有真截图才有）一处 B 墨批注框盖章 → 下方一句说明升起。
+     没有截图时：版位里只放“待替换”占位（虚线框 + 标注），绝不画假界面、不加批注框。 -->
+<html lang="zh-CN"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../assets/riso.css">
+<script src="../assets/gsap.min.js"></script>
+<script src="../assets/riso.js"></script>
+<style>
+  #plate { left:var(--gutter); top:300px; width:936px }
+  #plate > *{ position:absolute; inset:0 }
+  .shot  { mix-blend-mode:multiply }
+  #crops { inset:0 }
+  .crop  { position:absolute; background:var(--a) }
+  #note  { position:absolute }
+  #cap   { left:var(--gutter) }
+  #src   { left:var(--gutter) }
+</style></head>
+<body>
+<div id="frame"><div id="stage">
+  <div class="mast t"><span class="tag" id="m1"></span><span id="m2"></span></div>
+  <div id="plate"></div>
+  <div id="crops"></div>
+  <div id="cap" class="hd hd-m a t"></div>
+  <div id="src" class="mono a t"></div>
+  <canvas id="floor" class="tone b"></canvas>
+</div></div>
+<script>
+const DATA = {
+  palette:  'pal-blue',
+  mast:     ['09 · 分镜', '09 / 10'],
+  img:      '',                          // 项目内路径，如 '../assets/shots/storyboard.png'；空 = 占位
+  slot:     '分镜表截图',                  // 占位时写清楚这里要放什么截图
+  note:     null,                        // 批注框（仅真截图）：{ x:.52, y:.30, w:.30, h:.22 }，相对版位的比例
+  height:   780,                         // 版位高度 px（宽固定 936）
+  caption:  '上周的分镜表',               // ≤ 10 字
+  source:   '',                          // 可空：来源 / 日期，如 '截图 · 2026-10'
+  duration: 5.5,
+};
+
+Riso.setup(DATA);
+
+Riso.comp({ duration: DATA.duration, seed: 101 }, C => {
+  // ── 版面 ──
+  const H = DATA.height, X = 72, Y = 300, W = 936, L = 46, G = 20;
+  plate.style.height = H + 'px';
+  if (DATA.img) plate.innerHTML = `<div class="shot"><img src="${DATA.img}"></div>`;
+  else plate.innerHTML = `<div class="slot a"><span class="t">截图 · ${DATA.slot} · 待替换</span></div>`;
+  // 四角裁切标记（印刷厂的对位线），画在版位外 20px
+  const crop = (x, y, w, h) => { const d = document.createElement('div'); d.className = 'crop';
+    Object.assign(d.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px' }); crops.appendChild(d); return d; };
+  const marks = [
+    crop(X - G - L, Y - 2, L, 4), crop(X - 2, Y - G - L, 4, L),
+    crop(X + W + G, Y - 2, L, 4), crop(X + W - 2, Y - G - L, 4, L),
+    crop(X - G - L, Y + H - 2, L, 4), crop(X - 2, Y + H + G, 4, L),
+    crop(X + W + G, Y + H - 2, L, 4), crop(X + W - 2, Y + H + G, 4, L),
+  ];
+  let note = null;
+  if (DATA.img && DATA.note) {
+    note = document.createElement('div');
+    note.id = 'note'; note.className = 'seal';
+    Object.assign(note.style, { left: DATA.note.x * W + 'px', top: DATA.note.y * H + 'px', width: DATA.note.w * W + 'px', height: DATA.note.h * H + 'px' });
+    plate.appendChild(note);
+  }
+  Riso.text(cap, DATA.caption);
+  cap.style.top = Y + H + 84 + 'px';
+  if (DATA.source) { src.textContent = DATA.source; src.style.top = Riso.box(cap).bottom + 18 + 'px'; }
+  else src.style.display = 'none';
+
+  // ── 时间轴 ──
+  C.camera().boil().floor('#floor');
+  C.roll('.mast', 0, { dur: .5 });
+  C.tl.fromTo(marks, { scale: 0 }, { scale: 1, duration: .35, stagger: .03, ease: 'back.out(2)', immediateRender: true }, .05);
+  C.roll(plate, .25, { dur: .7, dir: 'down' });
+  if (DATA.img) C.print(plate.querySelector('.shot'), .3, { dur: .9 });
+  if (note) C.stamp(note, 1.35, { from: 1.25, rot: 0, shake: 3 });
+  C.rise(cap, note ? 1.75 : 1.2);
+  if (DATA.source) C.roll(src, note ? 2.1 : 1.6, { dur: .45 });
+});
+</script>
+</body></html>

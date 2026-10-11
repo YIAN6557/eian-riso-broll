@@ -1,0 +1,110 @@
+<!doctype html>
+<!-- 模板 · focus · 多选一 / 卡点
+     用于：几个并列项里有一个是重点（四组色本里最常用的那组；五个候选里推荐一个）。
+     画面：并列项是一张张印好的纸条（A 墨线框）依次滑入 → 落选项“退网”成 45% 平网（还读得出，但退后了）→
+     选中项压上 B 墨色块、往前一步 → 底部结论（数字盖章 + 一句话）。 -->
+<html lang="zh-CN"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../assets/riso.css">
+<script src="../assets/gsap.min.js"></script>
+<script src="../assets/riso.js"></script>
+<style>
+  #title { left:var(--gutter); top:292px }
+  #holder { inset:0 }
+  .slip  { position:absolute; left:var(--gutter); right:var(--gutter); --td:9px }
+  .slip .frame{ position:absolute; inset:0; border:4px solid var(--a); border-radius:4px }
+  .slip .bg   { position:absolute; inset:0; transform-origin:left center; border-radius:4px }
+  .slip .ix   { position:absolute; left:34px; top:50% }
+  .slip .nm   { position:absolute; left:170px; top:50% }
+  #vn    { left:58px; font-size:250px }
+  #vt    { left:var(--gutter) }
+</style></head>
+<body>
+<div id="frame"><div id="stage">
+  <div class="mast t"><span class="tag" id="m1"></span><span id="m2"></span></div>
+  <div id="title" class="hd hd-m a t"></div>
+  <div id="holder"></div>
+  <div id="vn" class="num b t" data-overprint></div>
+  <div id="vt" class="hd hd-m a t"></div>
+  <canvas id="floor" class="tone b"></canvas>
+</div></div>
+<script>
+const DATA = {
+  palette:  'pal-blue',
+  mast:     ['07 · 色本', '07 / 10'],
+  title:    '四组色本',
+  items:    ['墨蓝配荧光粉', '深青配橙', '藏青配朱红', '墨黑配明黄'],   // 2–5 项，每项 ≤ 7 字
+  pick:     0,                                   // 重点项下标
+  verdict:  { n: '70%', text: '的视频都用它' },    // 结论；没有数字时 n 留空字符串
+  duration: 9.5,
+};
+
+Riso.setup(DATA);
+
+Riso.comp({ duration: DATA.duration, seed: 77 }, C => {
+  // ── 版面 ──
+  Riso.text(title, DATA.title);
+  const n = DATA.items.length;
+  const top = Riso.box(title).bottom + 64;
+  const vH = DATA.verdict ? 250 : 0;
+  const h = Math.min(156, (1290 - vH - top - 24 * (n - 1)) / n);
+  const slips = DATA.items.map((s, i) => {
+    const d = document.createElement('div');
+    d.className = 'slip';
+    Object.assign(d.style, { top: top + i * (h + 24) + 'px', height: h + 'px' });
+    d.innerHTML = `<div class="bg fill-b"></div><div class="frame"></div>
+      <div class="ix mono a t">${String(i + 1).padStart(2, '0')}</div><div class="nm hd a t"></div>`;
+    holder.appendChild(d);
+    const nm = d.querySelector('.nm'), ix = d.querySelector('.ix');
+    Riso.text(nm, s);
+    Riso.fit(nm, { width: 700, max: Math.min(84, h * .56), min: 56 });
+    nm.style.marginTop = -nm.offsetHeight / 2 + 'px';
+    ix.style.marginTop = -ix.offsetHeight / 2 + 'px';
+    if (i !== DATA.pick) d.querySelector('.bg').style.display = 'none';
+    return d;
+  });
+  if (DATA.verdict && DATA.verdict.n) {
+    vn.textContent = DATA.verdict.n;
+    Riso.text(vt, DATA.verdict.text);
+    const last = Riso.box(slips[n - 1]).bottom;
+    // 数字和结论排在同一行，行尾停在 x 920（避开右侧按钮栏）。放不下时先把数字从 250 缩到 160，仍放不下再交给 QA
+    for (let size = 250; ; size -= 10) {
+      vn.style.fontSize = size + 'px';
+      vn.style.top = '0px';
+      vn.style.top = (last + 70 - Riso.inkBox(vn).top) + 'px';
+      const vi = Riso.inkBox(vn);
+      delete vt.dataset.overflow;
+      Riso.fit(vt, { width: 920 - vi.right - 28, max: 88, min: 56 });
+      vt.style.left = vi.right + 28 + 'px';
+      vt.style.top = vi.bottom - vt.offsetHeight * .92 + 'px';
+      if (!vt.dataset.overflow || size <= 160) break;
+    }
+  } else if (DATA.verdict) {
+    vn.style.display = 'none';
+    Riso.text(vt, DATA.verdict.text);
+    vt.style.top = Riso.box(slips[n - 1]).bottom + 70 + 'px';
+  } else { vn.style.display = 'none'; vt.style.display = 'none'; }
+
+  // ── 时间轴 ──
+  C.camera().boil().floor('#floor');
+  C.roll('.mast', 0, { dur: .5 });
+  C.rise(title, .05);
+  slips.forEach((s, i) => {
+    C.slide(s, .45 + i * .18, { x: -1100, dur: .55, ease: 'expo.out' });
+  });
+  const tf = .45 + n * .18 + .6;
+  // 落选项退网：油墨被抽掉一半，变成平网（仍可读）
+  const others = slips.filter((_, i) => i !== DATA.pick);
+  others.forEach(s => s.classList.add('tint'));
+  C.tl.fromTo(others, { '--td': '9px' }, { '--td': '4.4px', duration: .6, ease: 'power2.inOut', immediateRender: false }, tf);
+  // 选中项：B 色块从左刷满，往前一步
+  const pk = slips[DATA.pick];
+  C.bar(pk.querySelector('.bg'), tf + .15, { dur: .5 });
+  C.tl.to(pk, { scale: 1.02, duration: .45, ease: 'back.out(2)' }, tf + .2);
+  C.register(tf + .45);
+  if (DATA.verdict) {
+    const land = DATA.verdict.n ? C.stamp(vn, tf + .7, { rot: -6 }) : tf + .7;
+    C.rise(vt, land + .1);
+  }
+});
+</script>
+</body></html>

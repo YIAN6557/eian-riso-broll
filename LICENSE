@@ -1,0 +1,117 @@
+# Eian Personal Non-Commercial License 1.0
+# Eian 个人非商业使用许可 1.0
+
+Copyright © 2026 Eian. All rights reserved except for the permissions expressly granted below.
+版权所有 © 2026 Eian。除本许可明确授予的权限外，所有权利均予保留。
+
+本许可提供中英文文本。如有不一致或解释冲突，以中文文本为准。
+
+## 中文许可条款
+
+### 1. 许可对象与权利归属
+
+本许可仅适用于 eian-riso-broll 包内由 Eian 创作或持有权利的原创代码、文档、模板的具体视觉表达、示例文案及原创图像素材（“许可材料”）。抽象创意、一般视觉风格、方法或技术不作为本许可主张的专有对象；Eian 不持有权利的第三方材料也不在许可范围内。
+
+许可材料的版权及其他适用权利仍归 Eian 所有。本许可只授予下文列出的有限使用权限，不转让所有权。
+
+### 2. 个人非商业使用许可
+
+自然人可为其本人独立的非商业个人项目和个人账号，以非独占、免许可费、不可转让、不可再许可的方式：
+
+- 下载、安装和运行本 Skill；
+- 制作供本人使用的本地副本，并私下修改该副本；
+- 使用本 Skill 制作成片，并在非商业个人项目或账号中发布、分享这些成片。
+
+私有副本的修改内容不得向他人分发或公开。个人账号的商业变现不属于免费个人许可。
+
+### 3. 商业使用与另行授权
+
+所有商业使用都必须在使用前取得 Eian 的书面商业授权，并支付另行约定的许可费用。免费个人许可不附带任何商业使用权。
+
+商业使用包括但不限于：
+
+- 公司、机构、学校、政府单位、非营利组织、工作室、团队、团体或其他组织使用本 Skill；
+- 为雇主、客户或其他第三方制作、交付、运营或发布项目；
+- 收费服务、客户项目、商业内容、变现账号或视频、广告、赞助、品牌推广、产品使用或工作流集成；
+- 组织内部使用、测试或试用，即使没有单独向客户收费、尚未盈利或暂时没有收入。
+
+自然人为雇主、客户、公司、机构、团体或其他组织使用本 Skill，也属于商业使用。下载、安装、试用本 Skill，均不构成商业授权。
+
+### 4. 不得再分发许可材料
+
+未经 Eian 事先书面许可，不得复制后向他人提供、发布、转售、出租、再许可、托管或以其他方式分发许可材料的全部或部分内容，包括原始或修改后的源代码、模板文件、样式与动效库、示例文案和 demo 图像。
+
+个人非商业许可允许分享符合本许可的成片，不允许将 Skill 源码、模板或素材作为独立资源提取或分发。
+
+### 5. 第三方材料
+
+随包提供的 GSAP 动画引擎（assets/gsap.min.js）不属于本许可范围，继续依照 GreenSock 标准许可（https://gsap.com/standard-license）使用。随包提供的 Noto Serif SC、Noto Sans SC、Oswald、JetBrains Mono 字体（assets/fonts/）不属于本许可范围，继续依照同目录 OFL-*.txt 中的 SIL Open Font License 1.1 使用和分发。其他第三方材料也分别受其各自许可证约束，详见 THIRD_PARTY_NOTICES.md。本许可不授予用户对这些材料的额外权利。
+
+### 6. 许可终止与免责声明
+
+如使用者违反本许可，其个人非商业使用许可即告终止。许可终止后，使用者必须停止使用许可材料并删除其持有的副本。
+
+在适用法律允许的最大范围内，许可材料按“现状”提供，不提供任何明示或默示保证，包括适销性、特定用途适用性和不侵权保证。适用法律不允许排除或限制的责任不受本条影响。
+
+### 7. 商业授权申请
+
+商业使用者须先与 Eian 签订单独的书面商业许可并支付其中约定的费用。商业授权邮箱：ohhhhhmya@gmail.com。申请邮件请说明许可主体、项目或用途、使用范围和期限；只有双方通过邮件明确确认具体许可条款（包括许可费用）后，才构成商业授权。
+
+### 8. 适用法律与争议解决
+
+本许可的订立、效力、解释、履行及争议解决，适用中华人民共和国大陆地区现行法律。因本许可产生或与本许可有关的争议，双方应先协商解决；协商不成的，任何一方可向依中华人民共和国大陆地区现行民事诉讼法律具有管辖权的人民法院提起诉讼。
+
+## English Translation
+
+### 1. Licensed Materials and Ownership
+
+This license applies only to original code, documentation, specific visual expression of templates, sample copy, and original graphics in the eian-riso-broll package that Eian created or owns (the “Licensed Materials”). It does not claim exclusive rights in abstract ideas, general visual styles, methods, or techniques, and does not cover third-party material that Eian does not own.
+
+Copyright and other applicable rights in the Licensed Materials remain with Eian. This license grants only the limited permissions listed below and does not transfer ownership.
+
+### 2. Personal Non-Commercial License
+
+A natural person may, for that person’s own independent non-commercial personal projects and personal accounts, on a non-exclusive, royalty-free, non-transferable, and non-sublicensable basis:
+
+- download, install, and run the Skill;
+- make a local copy for personal use and privately modify that copy;
+- create finished videos with the Skill and publish or share them in non-commercial personal projects or accounts.
+
+Modifications to a private copy may not be distributed or made public. Commercial monetization of a personal account is not covered by the free personal license.
+
+### 3. Commercial Use and Separate Authorization
+
+All commercial use requires Eian’s prior written commercial authorization and payment of the license fee agreed separately. The free personal license grants no commercial-use rights.
+
+Commercial use includes, without limitation:
+
+- use by a company, institution, school, government body, nonprofit, studio, team, group, or other organization;
+- creating, delivering, operating, or publishing a project for an employer, client, or other third party;
+- paid services, client projects, commercial content, monetized accounts or videos, advertising, sponsorships, brand promotion, product use, or workflow integration;
+- internal organizational use, testing, or trials, even if no separate client fee is charged, no profit has been made, or no revenue has yet been received.
+
+Use by an individual on behalf of an employer, client, company, institution, group, or other organization is also commercial use. Downloading, installing, or trying the Skill does not grant commercial authorization.
+
+### 4. No Redistribution of Licensed Materials
+
+No person may reproduce and provide to others, publish, resell, rent, sublicense, host, or otherwise distribute any part of the Licensed Materials without Eian’s prior written permission. This includes original or modified source code, template files, the stylesheet and motion library, sample copy, and demo images.
+
+The personal non-commercial license permits sharing finished videos that comply with this license. It does not permit extracting or distributing the Skill source, templates, or assets as standalone materials.
+
+### 5. Third-Party Materials
+
+The bundled GSAP animation engine (assets/gsap.min.js) is excluded from this license and remains governed by the GreenSock Standard License (https://gsap.com/standard-license). The bundled Noto Serif SC, Noto Sans SC, Oswald, and JetBrains Mono fonts (assets/fonts/) are excluded from this license and remain governed by the SIL Open Font License 1.1 in the OFL-*.txt files in that directory. Other third-party materials remain subject to their own licenses; see THIRD_PARTY_NOTICES.md. This license grants no additional rights in those materials.
+
+### 6. Termination and Disclaimer
+
+A breach of this license terminates the personal non-commercial license. Upon termination, the user must stop using the Licensed Materials and delete copies in their possession.
+
+To the maximum extent permitted by applicable law, the Licensed Materials are provided “as is,” without express or implied warranties, including warranties of merchantability, fitness for a particular purpose, and non-infringement. This section does not affect liabilities that applicable law does not permit to be excluded or limited.
+
+### 7. Commercial License Requests
+
+Commercial users must first enter into a separate written commercial license with Eian and pay the fee stated in that agreement. Contact Eian at ohhhhhmya@gmail.com. The request should identify the licensee, project or purpose, requested scope, and term. A commercial license takes effect only after both parties expressly confirm the specific terms, including fees, by email.
+
+### 8. Governing Law and Disputes
+
+This license is governed by and will be interpreted under the laws currently in force in mainland China. The parties will first seek to resolve any dispute arising from or relating to this license through consultation. If consultation fails, either party may bring the dispute before a People's Court with jurisdiction under the civil procedure laws currently in force in mainland China.

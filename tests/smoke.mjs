@@ -9,7 +9,7 @@
 //   node tests/smoke.mjs --out <目录>        → 指定输出目录（默认在系统临时目录）
 //   node tests/smoke.mjs number quote       → 只测指定模板
 import { spawnSync } from 'node:child_process';
-import { cpSync, mkdirSync, readdirSync, writeFileSync, existsSync, mkdtempSync } from 'node:fs';
+import { cpSync, mkdirSync, readdirSync, readFileSync, writeFileSync, existsSync, mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -37,6 +37,24 @@ const comps = names.map(n => {
 });
 
 const S = join(ROOT, 'scripts');
+
+// shot 模板默认是“待替换”占位。再派生一条带真截图的 shot-image，才看得到截图的双色调效果；
+// 截图就用另一个模板的末帧（仓库里不放任何外来图片）
+if (names.includes('shot')) {
+  const src = all.find(n => n !== 'shot'), shots = join(OUT, 'assets', 'shots');
+  mkdirSync(shots, { recursive: true });
+  const r = spawnSync(process.execPath, [join(S, 'render.mjs'), join(ROOT, 'templates', src + '.html'), '--still', '-o', join(shots, 'sample.png')], { stdio: 'inherit' });
+  if (r.status !== 0) process.exit(1);
+  const html = readFileSync(join(ROOT, 'templates', 'shot.html'), 'utf8')
+    .replace(/img:\s*'',/, "img: '../assets/shots/sample.png',")
+    .replace(/note:\s*null,/, 'note: { x: .08, y: .14, w: .62, h: .2 },')
+    .replace(/source:\s*'',/, "source: '截图 · 示例',");
+  if (!html.includes('sample.png') || !html.includes('note: {')) { console.error('shot.html 的 DATA 格式变了，自测没法派生 shot-image'); process.exit(1); }
+  const f = join(OUT, 'compositions', 'shot-image.html');
+  writeFileSync(f, html);
+  comps.push(f);
+}
+
 const steps = [];
 function step(title, script, a) {
   console.log(`\n━━ ${title}`);

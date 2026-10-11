@@ -87,8 +87,9 @@ body{ color:var(--a); font-family:var(--sans); font-synthesis:none; -webkit-font
   justify-content:space-between; align-items:flex-start; border-bottom:4px solid currentColor;
   font:500 28px/1 var(--mono); letter-spacing:.16em; transform-origin:left center }
 .mast .tag{ display:flex; gap:18px; align-items:center }
+/* 版头色块是系列签名，固定不动：不参与 register() 的套印归位（用默认错位的固定值） */
 .mast .tag::before{ content:""; width:22px; height:22px; background:var(--b); mix-blend-mode:multiply;
-  translate:var(--rx) var(--ry) }
+  translate:3px -2px }
 .flood .mast .tag::before{ mix-blend-mode:normal }
 
 /* ── 部件 ─────────────────────────────────────────────── */

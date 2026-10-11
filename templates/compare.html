@@ -58,7 +58,7 @@ Riso.comp({ duration: DATA.duration, seed: 44 }, C => {
     bar.style.top = track.style.top = by + 'px';
     bar.style.width = Math.max(14, W * d.base / max) + 'px';
     y += by + 64 + 72;
-    return { r, lb, v, u, bar, d };
+    return { r, lb, v, u, track, bar, d };
   });
   const tb = Riso.box(title);
   scale.style.top = (tb.bottom - 40) + 'px';                         // 和标题同一行、右对齐（避开右侧按钮栏）
@@ -70,11 +70,13 @@ Riso.comp({ duration: DATA.duration, seed: 44 }, C => {
   const [A, B] = rows;
   // 以前：慢 —— 条匀速长满，数字同步爬升
   C.rise(A.lb, .45);
+  C.roll(A.track, .55, { dur: .4 });
   C.tl.fromTo(A.bar, { scaleX: 0 }, { scaleX: 1, duration: 1.35, ease: 'none', immediateRender: true }, .7);
   C.count(A.v, .7, { to: A.d.value, dur: 1.35, ease: 'none', fmt: v => Math.round(v) });
   C.rise(A.u, .9);
   // 现在：快 —— 一下到位，盖章
   C.rise(B.lb, 2.25);
+  C.roll(B.track, 2.3, { dur: .3 });
   C.tl.fromTo(B.bar, { scaleX: 0 }, { scaleX: 1, duration: .12, ease: 'power2.out', immediateRender: true }, 2.5);
   const land = C.stamp(B.v, 2.45, { rot: -7 });
   C.rise(B.u, land + .05);

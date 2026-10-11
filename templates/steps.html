@@ -44,7 +44,7 @@ Riso.comp({ duration: DATA.duration, seed: 22 }, C => {
   // ── 版面 ──
   const n = DATA.steps.length, key = DATA.key < 0 ? n + DATA.key : DATA.key;
   title.innerHTML = `<span class="hd a t" id="t1"></span><span class="num b t" id="tn" data-overprint></span><span class="hd a t" id="t2"></span>`;
-  t1.textContent = DATA.title[0]; tn.textContent = DATA.title[1]; t2.textContent = DATA.title[2];
+  Riso.text(t1, DATA.title[0]); tn.textContent = DATA.title[1]; Riso.text(t2, DATA.title[2]);   // 拆成单字，rise() 才有东西可升
   title.style.fontSize = '118px'; t1.classList.add('hd-l'); t2.classList.add('hd-l');
   title.style.top = '300px';
   const top0 = title.offsetTop + title.offsetHeight + 70, avail = 1300 - top0;

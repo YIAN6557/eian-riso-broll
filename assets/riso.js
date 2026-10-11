@@ -128,6 +128,16 @@
     /* 逐帧函数：f(t) 在每次 seek 时调用（计数器、网点、质感呼吸都走这里，保证可复现） */
     C.at = f => { C.fns.push(f); return C; };
 
+    /* 入场前不显示：元素在时刻 t 之前 visibility:hidden。第 0 帧只该有纸、纸纹和字幕床地层，
+       其余元素都从自己的入场动作开始出现。同一元素登记多次时，按最早的入场时刻 */
+    C.hideUntil = (sel, t) => {
+      els(sel).forEach(el => {
+        if (el.__showAt == null) C.at(tt => { el.style.visibility = tt < el.__showAt ? 'hidden' : ''; });
+        el.__showAt = Math.min(el.__showAt ?? Infinity, t);
+      });
+      return C;
+    };
+
     /* 慢推镜：整条匀速推进。B-roll 会被剪在任意一帧切入，匀速比缓入缓出更自然 */
     C.camera = ({ push = 0.03, drift = 0 } = {}) => {
       C.tl.fromTo(stage, { scale: 1, y: 0 }, { scale: 1 + push, y: drift, duration: C.duration, ease: 'none' }, 0);
@@ -158,6 +168,7 @@
       const list = els(sel);
       list.forEach((el, i) => {
         const t0 = t + i * stagger, t1 = t0 + dur;
+        if (t0 > 0) C.hideUntil(el, t0);                              // 点径为 0 时仍有一圈抗锯齿残影，入场前整个藏起来
         if (to != null || el.classList.contains('tint')) {          // 平网：长到指定点径后停住
           C.tl.fromTo(el, { '--td': '0px' }, { '--td': (to ?? 3.1) + 'px', duration: dur, ease, immediateRender: true }, t0);
           return;
@@ -214,6 +225,7 @@
     /* 计数：值是时间的纯函数（不依赖回调），任意帧可复现 */
     C.count = (sel, t, { from = 0, to, dur = 1.1, ease = 'expo.out', fmt = fmtThousands } = {}) => {
       const el = els(sel)[0], e = gsap.parseEase(ease);
+      if (t > 0) C.hideUntil(el, t);                                   // 计数开始前不显示“0”
       C.at(tt => { el.textContent = fmt(from + (to - from) * e(clamp01((tt - t) / dur))); });
       return t + dur;
     };
@@ -223,6 +235,7 @@
       els(sel).forEach((p, i) => {
         const len = p.getTotalLength();
         p.style.strokeDasharray = len + ' ' + len;
+        C.hideUntil(p, t + i * stagger);                               // 方头线帽在长度 0 时也会画出一个点
         C.tl.fromTo(p, { strokeDashoffset: len }, { strokeDashoffset: 0, duration: dur, ease, immediateRender: true }, t + i * stagger);
       });
       return t + dur + stagger * (els(sel).length - 1);

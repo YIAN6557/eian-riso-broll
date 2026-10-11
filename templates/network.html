@@ -99,8 +99,8 @@ Riso.comp({ duration: DATA.duration, seed: 55 }, C => {
   // ── 时间轴 ──
   C.camera().boil().floor('#floor');
   C.roll('.mast', 0, { dur: .5 });
-  C.print(num, .05, { dur: .6 });
   const t0 = .55, span = 2.2;
+  C.print(num, t0 - .05, { dur: .6 });                // 和计数同时出现，不先摆一个“0”
   C.count(num, t0, { to: DATA.number, dur: span + .3, ease: 'power2.in', fmt });
   C.register(.75);
   C.stamp(unit, .85, { rot: -6 });

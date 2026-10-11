@@ -67,7 +67,7 @@ Riso.comp({ duration: DATA.duration, seed: 11 }, C => {
   // ── 时间轴 ──
   C.camera().boil().floor('#floor');
   C.roll('.mast', 0, { dur: .5 });
-  C.print(num, 0, { dur: .66, from: 1.6 });          // 第 0 帧就有一层淡网点：硬切进来不空
+  C.print(num, .05, { dur: .66 });
   C.count(num, .05, { to: DATA.number, dur: 1.05, fmt });
   C.register(.72);
   const land = C.stamp(unit, 1.02, { rot: -6 });

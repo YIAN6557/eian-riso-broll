@@ -38,7 +38,7 @@
 
 ```bash
 git clone <本仓库> ~/.claude/skills/eian-riso-broll
-~/.claude/skills/eian-riso-broll/scripts/check_setup.sh
+node ~/.claude/skills/eian-riso-broll/scripts/check_setup.mjs
 ```
 
 依赖：Node ≥ 22、Chrome/Chromium、ffmpeg。字体已经放在 `assets/fonts/`，不用另装。
@@ -53,7 +53,7 @@ git clone <本仓库> ~/.claude/skills/eian-riso-broll
 手动：
 
 ```bash
-P=$(scripts/new_project.sh 2026-10-07-第12期)
+P=$(node scripts/new_project.mjs 2026-10-07-第12期)
 cp templates/number.html $P/compositions/01-number.html   # 改 DATA
 node scripts/render.mjs $P/compositions/*.html --still      # 样帧 + contact sheet
 node scripts/qa.mjs     $P/compositions/*.html              # 质检
@@ -65,31 +65,50 @@ node scripts/render.mjs $P/compositions/01-number.html --alpha # 透明底 ProRe
 
 ## 结构
 
-```
-SKILL.md                 流程编排：三道门、硬规则、常见坑
-references/
-├── copy.md              选段与文案提炼（只摘原话、字数上限、时长）
-├── templates.md         10 个模板的用途、故事、DATA 字段 + 选择树
-├── style.md             视觉系统：纸、两墨、叠印、网点、色本、版面、字体、禁区
-├── motion.md            动效原则 + riso.js API
-└── production.md        渲染器、质检、交付、排错
-templates/               number steps converge compare network quote focus versus title shot
-assets/
-├── riso.css             全部样式与色本
-├── riso.js              动效库（时间轴 helper、网点画布、版面自检）
-├── gsap.min.js          GSAP 3（GreenSock 标准许可，免费商用）
-└── fonts/               随 skill 分发的字体（OFL）+ 许可证
-scripts/
-├── render.mjs           逐帧渲染 → mp4 / mov / 样帧 / contact sheet（自带 CDP 驱动）
-├── qa.mjs               质检 + 叠层图
-├── timing.mjs           口播时长（SRT 精确定位 / 语速估算）
-├── new_project.sh       新建自包含项目
-├── check_setup.sh       环境自检
-└── lib/chrome.mjs       headless Chrome 驱动（Node 自带 WebSocket）
-tests/smoke.mjs          一键自测：全部模板 → 样帧 + 成片 + 质检 + 时长脚本
-evals/evals.json         行为评测
-examples/                示例逐字稿（虚构）+ 分镜表 + 字幕；模板默认 DATA 和 demo 都来自它
-tools/build_fonts.py     从上游开源字体生成 assets/fonts（维护者用）
-tools/build_demo.mjs     重新生成 demo/（维护者用）
-demo/                    GIF 与末帧一览
-```
+每个文件只负责一件事。
+
+**给 Claude 读的**（流程和规则）
+
+| 文件 | 负责 |
+|---|---|
+| `SKILL.md` | 入口：什么时候用、三道门流程、不可违反的规则、常见坑 |
+| `references/copy.md` | 选段与文案：哪些段落值得做、怎么从原话里摘屏幕字、时长 |
+| `references/templates.md` | 10 个模板的用途、画面故事、DATA 字段、选择树 |
+| `references/style.md` | 视觉系统：纸、两墨、叠印、网点、色本、版面、字体、禁区 |
+| `references/motion.md` | 动效原则 + `riso.js` API + 写新模板的检查单 |
+| `references/production.md` | 渲染、质检、交付、排错 |
+
+**在浏览器里跑的**（每条动画就是一个网页）
+
+| 文件 | 负责 |
+|---|---|
+| `templates/*.html` | 10 个模板。每个只有三块：`DATA`（给使用者改）、版面、时间轴 |
+| `assets/riso.css` | 样式：色本、字体、油墨 / 网点 / 纸纹部件 |
+| `assets/riso.js` | 动效库：时间轴 helper、排版工具（`setup` / `text` / `fit` / `markUnder` / `inkBox`）、版面安全区 `ZONE`（唯一来源）、版面自检 |
+| `assets/gsap.min.js` | GSAP 3 动画引擎（第三方，GreenSock 标准许可） |
+| `assets/fonts/` | 随 skill 分发的字体（OFL）及许可证 |
+
+**命令行**（全部是 Node，零 npm 依赖，macOS / Linux / Windows 通用）
+
+| 文件 | 负责 |
+|---|---|
+| `scripts/render.mjs` | 逐帧渲染：mp4 / 透明底 mov / 样帧 / contact sheet |
+| `scripts/qa.mjs` | 质检：版面（安全区、字号、对比度、互压）+ 成片（时长、尺寸），出叠层图 |
+| `scripts/timing.mjs` | 口播时长：SRT 精确定位 / 按语速估算 |
+| `scripts/new_project.mjs` | 新建一个自包含的视频项目 |
+| `scripts/check_setup.mjs` | 环境自检 |
+| `scripts/lib/chrome.mjs` | headless Chrome 驱动（找浏览器、启动、截图） |
+| `scripts/lib/project.mjs` | 项目目录：skill 根路径、建项目、拷模板 |
+| `scripts/lib/media.mjs` | ffmpeg / ffprobe：拼 contact sheet、读成片参数 |
+| `scripts/lib/args.mjs` | 命令行参数解析 |
+
+**维护用**
+
+| 文件 | 负责 |
+|---|---|
+| `tests/smoke.mjs` | 一键自测：全部模板 → 样帧 → 成片 → 质检 → 时长脚本 |
+| `evals/evals.json` | 行为评测：Claude 用这个 skill 时该怎么做 |
+| `examples/` | 虚构示例逐字稿 + 分镜表 + 字幕；模板默认 DATA 和 demo 都来自它 |
+| `tools/build_demo.mjs` | 重新生成 `demo/` |
+| `tools/build_fonts.py` | 从上游开源字体重新生成 `assets/fonts/` |
+| `demo/` | README 用的 GIF 和末帧总览 |

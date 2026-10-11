@@ -22,10 +22,7 @@
   --num:   "Riso Num", "Riso Sans", sans-serif;                             /* 数字：Oswald Bold */
   --mono:  "Riso Mono", "Riso Sans", monospace;                             /* 编号：JetBrains Mono（中文落到 Riso Sans）*/
 
-  /* 安全区（QA 脚本读同一组数字，改这里要同步 scripts/qa.mjs） */
-  --info-top: 168px;      /* 平台顶栏以下 */
-  --info-bottom: 1330px;  /* 以下是字幕床：只放装饰，不放字 */
-  --gutter: 72px;
+  --gutter: 72px;         /* 左右版心边距。安全区（顶栏 / 字幕床 / 按钮栏）的数字只在 riso.js 的 ZONE 里 */
 }
 
 /* 每个字体只有一个字重；声明成整段字重范围，任何 font-weight 都用这一份，浏览器不会再合成假粗体 */

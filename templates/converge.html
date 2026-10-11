@@ -22,7 +22,6 @@
   .blk .tone{ position:absolute; inset:10px; --td:3.4px }
   .blk .ix{ position:absolute; left:22px; top:20px; color:var(--a); mix-blend-mode:multiply }
   .blk .nm{ position:absolute; left:22px; bottom:18px }
-  #floor{ left:0; top:1330px; width:1080px; height:590px }
 </style></head>
 <body>
 <div id="frame"><div id="stage">
@@ -43,8 +42,7 @@ const DATA = {
   duration: 8.5,
 };
 
-document.body.className = DATA.palette;
-m1.textContent = DATA.mast[0]; m2.textContent = DATA.mast[1];
+Riso.setup(DATA);
 
 Riso.comp({ duration: DATA.duration, seed: 33 }, C => {
   // ── 版面：两个数字 + 一根箭头 ──

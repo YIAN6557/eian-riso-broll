@@ -8,25 +8,19 @@
 //   选项：--draft（快速低码率）  --calm（纸纹不动、不推镜，只给压 GIF 用）  -o <输出路径>（只渲一条时可用）
 import { spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
-import { resolve, dirname, basename, join } from 'node:path';
+import { resolve, dirname, join } from 'node:path';
 import { once } from 'node:events';
 import { launch } from './lib/chrome.mjs';
+import { cli } from './lib/args.mjs';
+import { projectOf } from './lib/project.mjs';
+import { contactSheet } from './lib/media.mjs';
 
-const args = process.argv.slice(2);
-const has = f => { const i = args.indexOf(f); if (i < 0) return false; args.splice(i, 1); return true; };
-const val = f => { const i = args.indexOf(f); if (i < 0) return null; const v = args[i + 1]; args.splice(i, 2); return v; };
-const STILL = has('--still'), ALPHA = has('--alpha'), DRAFT = has('--draft'), CALM = has('--calm');
-const AT = val('--at'), OUT = val('-o');
-const files = args.map(f => resolve(f));
+const a = cli();
+const STILL = a.has('--still'), ALPHA = a.has('--alpha'), DRAFT = a.has('--draft'), CALM = a.has('--calm');
+const AT = a.val('--at'), OUT = a.val('-o');
+const files = a.rest.map(f => resolve(f));
 if (!files.length) { console.error('用法: render.mjs <composition.html> [...] [--still|--at t|--alpha|--draft] [-o out]'); process.exit(2); }
 for (const f of files) if (!existsSync(f)) { console.error('找不到 ' + f); process.exit(2); }
-
-const projectOf = f => basename(dirname(f)) === 'compositions' ? dirname(dirname(f)) : dirname(f);
-const run = (cmd, a) => new Promise((res, rej) => {
-  const p = spawn(cmd, a, { stdio: ['ignore', 'ignore', 'pipe'] });
-  let err = ''; p.stderr.on('data', d => err += d);
-  p.on('close', c => c ? rej(new Error(cmd + ' 失败:\n' + err.slice(-2000))) : res());
-});
 
 const chrome = await launch();
 const stills = [];
@@ -77,13 +71,8 @@ try {
 
   // 多张样帧 → 自动拼一张 contact sheet（每行 4 张）
   if (stills.length > 1 && !OUT) {
-    const cols = Math.min(stills.length, 4), n = cols * Math.ceil(stills.length / cols);
     const sheet = join(dirname(stills[0]), 'sheet.jpg');
-    const fill = Array.from({ length: n - stills.length }, () => ['-f', 'lavfi', '-i', 'color=c=0x161616:s=432x768:d=1']).flat();
-    const layout = Array.from({ length: n }, (_, i) => `${(i % cols) * 444}_${Math.floor(i / cols) * 780}`).join('|');
-    const fc = Array.from({ length: n }, (_, i) => i < stills.length ? `[${i}:v]scale=432:768[s${i}]` : `[${i}:v]null[s${i}]`).join(';') + ';' +
-      Array.from({ length: n }, (_, i) => `[s${i}]`).join('') + `xstack=inputs=${n}:layout=${layout}:fill=0x161616,pad=iw+24:ih+24:12:12:color=0x161616`;
-    await run('ffmpeg', ['-v', 'error', '-y', ...stills.flatMap(s => ['-i', s]), ...fill, '-filter_complex', fc, '-frames:v', '1', '-q:v', '3', sheet]);
+    await contactSheet(stills, sheet, { cols: 4 });
     console.log(`✓ contact sheet → ${sheet}`);
   }
 } finally {

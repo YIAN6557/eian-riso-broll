@@ -9,32 +9,24 @@
 //   node tests/smoke.mjs --out <目录>        → 指定输出目录（默认在系统临时目录）
 //   node tests/smoke.mjs number quote       → 只测指定模板
 import { spawnSync } from 'node:child_process';
-import { cpSync, mkdirSync, readdirSync, readFileSync, writeFileSync, existsSync, mkdtempSync } from 'node:fs';
+import { readdirSync, readFileSync, writeFileSync, mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join, resolve } from 'node:path';
+import { cli } from '../scripts/lib/args.mjs';
+import { SKILL_ROOT as ROOT, createProject, addTemplate } from '../scripts/lib/project.mjs';
 
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const args = process.argv.slice(2);
-const has = f => { const i = args.indexOf(f); if (i < 0) return false; args.splice(i, 1); return true; };
-const val = f => { const i = args.indexOf(f); if (i < 0) return null; const v = args[i + 1]; args.splice(i, 2); return v; };
-const FULL = has('--full'), ALPHA = has('--alpha');
-const OUT = resolve(val('--out') || mkdtempSync(join(tmpdir(), 'riso-smoke-')));
+const a = cli();
+const FULL = a.has('--full'), ALPHA = a.has('--alpha');
+const OUT = resolve(a.val('--out') || mkdtempSync(join(tmpdir(), 'riso-smoke-')));
+const args = a.rest;
 
 const all = readdirSync(join(ROOT, 'templates')).filter(f => f.endsWith('.html')).map(f => f.slice(0, -5)).sort();
 const names = args.length ? args : all;
 const unknown = names.filter(n => !all.includes(n));
 if (unknown.length) { console.error('没有这些模板：' + unknown.join(', ') + '\n可选：' + all.join(' ')); process.exit(2); }
-if (existsSync(join(OUT, 'compositions'))) { console.error('输出目录里已经有项目了，换一个 --out：' + OUT); process.exit(2); }
-
-// 和 new_project.sh 一样的项目结构：assets 整份拷入，模板放进 compositions/
-mkdirSync(join(OUT, 'compositions'), { recursive: true });
-cpSync(join(ROOT, 'assets'), join(OUT, 'assets'), { recursive: true });
-const comps = names.map(n => {
-  const f = join(OUT, 'compositions', n + '.html');
-  cpSync(join(ROOT, 'templates', n + '.html'), f);
-  return f;
-});
+// 和 new_project.mjs 一样的项目结构
+try { createProject(OUT); } catch (e) { console.error(e.message + '（换一个 --out）'); process.exit(2); }
+const comps = names.map(n => addTemplate(OUT, n));
 
 const S = join(ROOT, 'scripts');
 
@@ -42,7 +34,6 @@ const S = join(ROOT, 'scripts');
 // 截图就用另一个模板的末帧（仓库里不放任何外来图片）
 if (names.includes('shot')) {
   const src = all.find(n => n !== 'shot'), shots = join(OUT, 'assets', 'shots');
-  mkdirSync(shots, { recursive: true });
   const r = spawnSync(process.execPath, [join(S, 'render.mjs'), join(ROOT, 'templates', src + '.html'), '--still', '-o', join(shots, 'sample.png')], { stdio: 'inherit' });
   if (r.status !== 0) process.exit(1);
   const html = readFileSync(join(ROOT, 'templates', 'shot.html'), 'utf8')

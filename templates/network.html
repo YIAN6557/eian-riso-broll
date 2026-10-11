@@ -16,7 +16,6 @@
   #mark { transform-origin:left center }
   #net circle.n { fill:var(--a) }
   #net circle.h { fill:var(--b); mix-blend-mode:multiply; translate:var(--rx) var(--ry) }
-  #floor { left:0; top:1330px; width:1080px; height:590px }
 </style></head>
 <body>
 <div id="frame"><div id="stage">
@@ -40,8 +39,7 @@ const DATA = {
   duration: 7,
 };
 
-document.body.className = DATA.palette;
-m1.textContent = DATA.mast[0]; m2.textContent = DATA.mast[1];
+Riso.setup(DATA);
 const fmt = v => DATA.comma ? Math.round(v).toLocaleString('en-US') : String(Math.round(v));
 
 Riso.comp({ duration: DATA.duration, seed: 55 }, C => {
@@ -58,11 +56,7 @@ Riso.comp({ duration: DATA.duration, seed: 55 }, C => {
   Riso.text(say, DATA.say);
   Riso.fit(say, { width: 936, max: 88, min: 60 });
   say.style.top = (u.bottom + 56) + 'px';
-  const ems = [...say.querySelectorAll('.em')];
-  if (ems.length) {
-    const a = Riso.box(ems[0]), b = Riso.box(ems[ems.length - 1]);
-    Object.assign(mark.style, { left: a.left - 8 + 'px', width: b.right - a.left + 16 + 'px', top: a.top + a.height * .52 + 'px', height: a.height * .4 + 'px' });
-  } else mark.style.display = 'none';
+  const hasMark = Riso.markUnder(mark, say);
 
   // ── 网：在 say 下方到 1290 之间撒点（最小间距），每点连最近的 2–3 个 + 少量远链 ──
   const top = Riso.box(say).bottom + 70, bot = 1290, L = 96, R = 984, cx = 540, cy = (top + bot) / 2;
@@ -105,7 +99,7 @@ Riso.comp({ duration: DATA.duration, seed: 55 }, C => {
   C.register(.75);
   C.stamp(unit, .85, { rot: -6 });
   const said = C.rise(say, 1.25);
-  if (ems.length) C.bar(mark, said + .1, { dur: .45 });
+  if (hasMark) C.bar(mark, said + .1, { dur: .45 });
   dots.forEach((d, i) => C.tl.fromTo(d, { scale: 0 }, { scale: 1, duration: .35, ease: 'back.out(2.4)', immediateRender: true }, t0 + .2 + span * (i / P.length) * .8));
   C.draw(lines, t0 + .35, { dur: .32, stagger: span / lines.length });
 });

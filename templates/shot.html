@@ -17,7 +17,6 @@
   #note  { position:absolute }
   #cap   { left:var(--gutter) }
   #src   { left:var(--gutter) }
-  #floor { left:0; top:1330px; width:1080px; height:590px }
 </style></head>
 <body>
 <div id="frame"><div id="stage">
@@ -41,8 +40,7 @@ const DATA = {
   duration: 5.5,
 };
 
-document.body.className = DATA.palette;
-m1.textContent = DATA.mast[0]; m2.textContent = DATA.mast[1];
+Riso.setup(DATA);
 
 Riso.comp({ duration: DATA.duration, seed: 101 }, C => {
   // ── 版面 ──

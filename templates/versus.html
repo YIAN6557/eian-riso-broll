@@ -17,7 +17,6 @@
   .strike{ position:absolute; height:12px; transform-origin:left center }
   #mid   { left:var(--gutter); right:var(--gutter); height:4px; transform-origin:left center }
   #mark  { transform-origin:left center }
-  #floor { left:0; top:1330px; width:1080px; height:590px }
 </style></head>
 <body>
 <div id="frame"><div id="stage">
@@ -42,8 +41,7 @@ const DATA = {
   duration: 6.5,
 };
 
-document.body.className = DATA.palette;
-m1.textContent = DATA.mast[0]; m2.textContent = DATA.mast[1];
+Riso.setup(DATA);
 
 Riso.comp({ duration: DATA.duration, seed: 88 }, C => {
   // ── 版面：上下两半，各自一个标签 + 一段宋体 ──
@@ -64,11 +62,7 @@ Riso.comp({ duration: DATA.duration, seed: 88 }, C => {
   Object.assign(tbb.style, { top: tb.style.top, width: tb.offsetWidth + 'px', height: tb.offsetHeight + 'px' });
   Riso.text(sb, DATA.after.text); Riso.fit(sb, { width: 936, max: 132, min: 80 });
   sb.style.top = Riso.box(tb).bottom + 30 + 'px';
-  const ems = [...sb.querySelectorAll('.em')];
-  if (ems.length) {
-    const a = Riso.box(ems[0]), b = Riso.box(ems[ems.length - 1]);
-    Object.assign(mark.style, { left: a.left - 8 + 'px', width: b.right - a.left + 16 + 'px', top: a.top + a.height * .52 + 'px', height: a.height * .4 + 'px' });
-  } else mark.style.display = 'none';
+  const hasMark = Riso.markUnder(mark, sb);
 
   // ── 时间轴 ──
   C.camera().boil().floor('#floor');
@@ -82,7 +76,7 @@ Riso.comp({ duration: DATA.duration, seed: 88 }, C => {
   C.bar(tbb, tOut + .55, { dur: .3 });
   C.roll(tb, tOut + .62, { dur: .3 });
   const sbEnd = C.rise(sb, tOut + .75, { stagger: .04 });
-  if (ems.length) C.bar(mark, sbEnd + .1, { dur: .45 });
+  if (hasMark) C.bar(mark, sbEnd + .1, { dur: .45 });
   C.register(sbEnd + .7);
 });
 </script>

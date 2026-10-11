@@ -11,7 +11,6 @@
   #kick  { left:var(--gutter) }
   #ttl   { left:var(--gutter) }
   #sub   { left:var(--gutter) }
-  #floor { left:0; top:1330px; width:1080px; height:590px }
 </style></head>
 <body>
 <div id="frame"><div id="stage">
@@ -34,9 +33,7 @@ const DATA = {
   duration: 3,
 };
 
-document.body.className = DATA.palette;
-if (DATA.flood) document.getElementById('frame').classList.add('flood');
-m1.textContent = DATA.mast[0]; m2.textContent = DATA.mast[1];
+Riso.setup(DATA);
 
 Riso.comp({ duration: DATA.duration, seed: 99 }, C => {
   // ── 版面：序号墨迹左缘贴 56、顶 = 300；标题压住序号下 1/5 ──

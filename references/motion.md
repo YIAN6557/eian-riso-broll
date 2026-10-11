@@ -38,10 +38,13 @@ Riso.comp({ duration: 4.5, seed: 11 }, C => {
 
 | 函数 | 作用 |
 |---|---|
+| `Riso.setup(DATA)` | 模板公共开头：色本、`flood` 满版墨底、版头文字 |
 | `Riso.text(el, '第一行\n第二行[重点]')` | 拆成 `.ln` 行 + `.ch` 字；`[ ]` 内的字带 `.em` |
 | `Riso.fit(el, { width, max, min })` | 从 max 字号往下缩到最宽一行 ≤ width；缩到 min 仍放不下 → QA 报错 |
 | `Riso.inkBox(el)` | 单行元素的**字形墨迹**框（#stage 坐标）——数字对齐用它 |
 | `Riso.box(el)` | 元素盒子（#stage 坐标） |
+| `Riso.markUnder(mark, textEl, { pad: 8 })` | 荧光压条盖在 `[重点]` 字的下半截；没有 `[ ]` 时隐藏并返回 false |
+| `Riso.ZONE` | 版面安全区（顶栏 / 字幕床 / 左右边界 / 按钮栏）的唯一来源，QA 也读它 |
 | `Riso.halftone(canvas, { cell, density(u, v, t) })` | 返回 `draw(t)`；配合 `C.at(draw)` 做会动的网点 |
 
 **时间轴 helper**（返回“落地时间”，可串联）
@@ -50,7 +53,7 @@ Riso.comp({ duration: 4.5, seed: 11 }, C => {
 |---|---|
 | `C.camera({ push: .03, drift: 0 })` | 整条慢推 |
 | `C.boil()` | 油墨颗粒呼吸 |
-| `C.floor('#floor', { power: 2.1, max: .62, cell: 16 })` | 字幕床网点地层（开场 0.6s 从 70% 长满） |
+| `C.floor('#floor', { power: 2.1, max: .62, cell: 16 })` | 字幕床网点地层（自动铺满 `ZONE.bottom` 以下；开场 0.6s 从 70% 长满） |
 | `C.print(sel, t, { dur: .7, from: 0, to, stagger })` | 网点显影；给 `to`（px）或元素带 `.tint` 时停在平网 |
 | `C.register(t, { dx: 22, dy: -14 })` | 套印归位（整版 B 墨；版头色块固定不参与）。一条最多一次 |
 | `C.hideUntil(sel, t)` | 元素在 t 之前不显示（print / count / draw 已自动调用） |
@@ -77,7 +80,9 @@ Riso.comp({ duration: 4.5, seed: 11 }, C => {
 复制最接近的模板改。检查单：
 
 - [ ] 顶部注释写清楚：用于什么段落 / 画面是怎么讲故事的
-- [ ] 只有 `DATA` 是给使用者改的；版面全部由 DATA 推算（`fit` / `inkBox` / `box`）
+- [ ] 脚本以 `Riso.setup(DATA)` 开头（色本、版头），不要自己写 `body.className`
+- [ ] 只有 `DATA` 是给使用者改的；版面全部由 DATA 推算（`fit` / `inkBox` / `box`）；荧光压条用 `Riso.markUnder`
+- [ ] 版面坐标不写死安全区数字，需要时读 `Riso.ZONE`
 - [ ] 所有文字元素带 `.t`；有意叠印的加 `data-overprint`
 - [ ] 第 0 帧干净（只有纸 + 地层）；2.5 秒内信息到位；有且只有一个高潮
 - [ ] `render --still` + `qa` 零 error，再看一遍 `--at 0`、`--at 1` 两帧

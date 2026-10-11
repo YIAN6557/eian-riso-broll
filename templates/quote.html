@@ -13,7 +13,6 @@
   #q .em { color:var(--b) }
   #qm    { left:0; top:0; font-size:900px; line-height:1; color:var(--b) }
   #sun   { left:430px; top:1180px; width:900px; height:900px }
-  #floor { left:0; top:1330px; width:1080px; height:590px }
 </style></head>
 <body>
 <div id="frame" class="flood"><div id="stage">
@@ -32,8 +31,7 @@ const DATA = {
   duration: 6,
 };
 
-document.body.className = DATA.palette;
-m1.textContent = DATA.mast[0]; m2.textContent = DATA.mast[1];
+Riso.setup(DATA);
 
 Riso.comp({ duration: DATA.duration, seed: 66 }, C => {
   // ── 版面 ──

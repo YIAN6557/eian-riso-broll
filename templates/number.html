@@ -12,7 +12,6 @@
   #unit  { right:var(--gutter); }
   #say   { left:var(--gutter); }
   #mark  { transform-origin:left center; }
-  #floor { left:0; top:1330px; width:1080px; height:590px; }
 </style></head>
 <body>
 <div id="frame"><div id="stage">
@@ -35,8 +34,7 @@ const DATA = {
   duration: 5.5,
 };
 
-document.body.className = DATA.palette;
-m1.textContent = DATA.mast[0]; m2.textContent = DATA.mast[1];
+Riso.setup(DATA);
 const fmt = v => DATA.prefix + (DATA.comma ? Math.round(v).toLocaleString('en-US') : Math.round(v)) + DATA.suffix;
 
 Riso.comp({ duration: DATA.duration, seed: 11 }, C => {
@@ -57,13 +55,7 @@ Riso.comp({ duration: DATA.duration, seed: 11 }, C => {
   Riso.fit(say, { width: 936, max: 112, min: 72 });
   say.style.top = (u.bottom + 84) + 'px';
 
-  const ems = [...say.querySelectorAll('.em')];
-  if (ems.length) {
-    const s = document.getElementById('stage').getBoundingClientRect();
-    const a = ems[0].getBoundingClientRect(), b = ems[ems.length - 1].getBoundingClientRect();
-    Object.assign(mark.style, { left: a.left - s.left - 10 + 'px', width: b.right - a.left + 20 + 'px',
-      top: a.top - s.top + a.height * .52 + 'px', height: a.height * .40 + 'px' });
-  } else mark.style.display = 'none';
+  const hasMark = Riso.markUnder(mark, say, { pad: 10 });
 
   // ── 时间轴 ──
   C.camera().boil().floor('#floor');
@@ -73,7 +65,7 @@ Riso.comp({ duration: DATA.duration, seed: 11 }, C => {
   C.register(.72);
   const land = C.stamp(unit, 1.02, { rot: -6 });
   const said = C.rise(say, land + .28);
-  if (ems.length) C.bar(mark, said + .12, { dur: .5 });
+  if (hasMark) C.bar(mark, said + .12, { dur: .5 });
 });
 </script>
 </body></html>

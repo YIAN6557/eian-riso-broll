@@ -13,7 +13,9 @@ export function findChrome() {
   const cands = [
     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
     '/Applications/Chromium.app/Contents/MacOS/Chromium',
+    ...windowsChromes(),
     ...['google-chrome', 'google-chrome-stable', 'chromium', 'chromium-browser'].map(n => {
+      if (process.platform === 'win32') return null;
       try { return execFileSync('which', [n], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch { return null; }
     }),
     ...playwrightChromes(),
@@ -23,10 +25,19 @@ export function findChrome() {
   return hit;
 }
 
+// Windows：Chrome 的几个默认安装位置；Edge 也是 Chromium 内核，放最后兜底
+function windowsChromes() {
+  if (process.platform !== 'win32') return [];
+  const roots = [process.env.PROGRAMFILES, process.env['PROGRAMFILES(X86)'], process.env.LOCALAPPDATA].filter(Boolean);
+  return [...roots.map(r => join(r, 'Google/Chrome/Application/chrome.exe')), ...roots.map(r => join(r, 'Microsoft/Edge/Application/msedge.exe'))];
+}
+
 // Playwright 下载过的 Chromium（装过 Playwright 的机器、CI 镜像里常见），版本新的优先
 function playwrightChromes() {
-  const roots = [process.env.PLAYWRIGHT_BROWSERS_PATH, join(homedir(), '.cache/ms-playwright'), join(homedir(), 'Library/Caches/ms-playwright')];
-  const bins = ['chrome-linux64/chrome', 'chrome-linux/chrome', 'chrome-mac-arm64/Chromium.app/Contents/MacOS/Chromium', 'chrome-mac/Chromium.app/Contents/MacOS/Chromium'];
+  const roots = [process.env.PLAYWRIGHT_BROWSERS_PATH, join(homedir(), '.cache/ms-playwright'), join(homedir(), 'Library/Caches/ms-playwright'),
+    process.env.LOCALAPPDATA && join(process.env.LOCALAPPDATA, 'ms-playwright')].filter(Boolean);
+  const bins = ['chrome-linux64/chrome', 'chrome-linux/chrome', 'chrome-mac-arm64/Chromium.app/Contents/MacOS/Chromium', 'chrome-mac/Chromium.app/Contents/MacOS/Chromium',
+    'chrome-win64/chrome.exe', 'chrome-win/chrome.exe'];
   const out = [];
   for (const r of roots) {
     let dirs = [];

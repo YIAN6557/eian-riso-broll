@@ -2,14 +2,14 @@
 
 ## 环境
 
-`scripts/check_setup.sh` 一次查完：Node ≥ 22（渲染器用 Node 自带的 WebSocket 驱动 Chrome，**零 npm 依赖**）、Chrome/Chromium（会真的启动一次；找不到时设 `CHROME=<路径>`，也会自动找 Playwright 下载的 Chromium）、ffmpeg/ffprobe、字体文件。
+`node scripts/check_setup.mjs` 一次查完：Node ≥ 22（渲染器用 Node 自带的 WebSocket 驱动 Chrome，**零 npm 依赖**）、Chrome/Chromium（会真的启动一次；找不到时设 `CHROME=<路径>`，也会自动找 Playwright 下载的 Chromium）、ffmpeg/ffprobe、字体文件。
 
 字体随 skill 分发（`assets/fonts/`，见那里的 README），不依赖系统字体，所以 macOS / Linux / Windows 渲出来一样。字体没加载上时页面会报错、渲染中止，不会悄悄换成系统字体出片。
 
 ## 项目结构
 
 ```
-<项目>/                          scripts/new_project.sh <名字> 生成；默认在 ~/eian-riso-broll-projects/
+<项目>/                          node scripts/new_project.mjs <名字> 生成；默认在 ~/eian-riso-broll-projects/
 ├── assets/                     riso.css / riso.js / gsap / fonts —— 整份拷入，项目自包含
 │   └── shots/                  真截图放这里
 ├── compositions/NN-名字.html    每条一个，从 templates/ 复制

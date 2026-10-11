@@ -8,10 +8,10 @@
 //
 // 建议 composition 时长 = 口播时长 + 0.6s（前后各留一点给剪辑点）；最短 3s。
 import { readFileSync } from 'node:fs';
+import { cli } from './lib/args.mjs';
 
-const args = process.argv.slice(2);
-const take = f => { const i = args.indexOf(f); if (i < 0) return null; const v = args[i + 1]; args.splice(i, 2); return v; };
-const srtPath = take('--srt'), rate = +(take('--rate') || 4.5);
+const a = cli();
+const srtPath = a.val('--srt'), rate = +(a.val('--rate') || 4.5), args = a.rest;
 if (!args.length) { console.error('用法: timing.mjs [--srt file.srt] [--rate 4.5] "台词" ["台词" ...]'); process.exit(2); }
 
 const norm = s => s.replace(/[\s\p{P}\p{S}]/gu, '').toLowerCase();

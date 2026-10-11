@@ -16,7 +16,6 @@
   .row .bar { position:absolute; left:0; height:64px; transform-origin:left center }
   .row .track{ position:absolute; left:0; right:0; height:64px; border:3px dashed var(--a); opacity:.28 }
   #scale { position:absolute; right:var(--gutter) }
-  #floor { left:0; top:1330px; width:1080px; height:590px }
 </style></head>
 <body>
 <div id="frame"><div id="stage">
@@ -37,8 +36,7 @@ const DATA = {
   duration: 4.5,
 };
 
-document.body.className = DATA.palette;
-m1.textContent = DATA.mast[0]; m2.textContent = DATA.mast[1];
+Riso.setup(DATA);
 
 Riso.comp({ duration: DATA.duration, seed: 44 }, C => {
   // ── 版面 ──

@@ -15,6 +15,14 @@
 (function () {
   'use strict';
 
+  /* 画布与版面安全区：唯一来源。qa 的检查、叠层图、字幕床地层都读这里（经 __riso.meta().zone 传给 scripts/qa.mjs）
+       top    平台顶栏（搜索框 / 状态栏）以下才放字
+       bottom 以下是字幕床：只放网点地层等装饰
+       left / right  文字左右边界
+       rail   右侧按钮栏（点赞 / 评论 / 分享）：x > rail.x 且 y 在 y0–y1 之间尽量不放字 */
+  const W = 1080, H = 1920;
+  const ZONE = { top: 168, bottom: 1330, left: 56, right: 1024, rail: { x: 930, y0: 880, y1: 1500 } };
+
   const Q = new URLSearchParams(location.search);
   const RENDER = Q.has('render');
   const CALM = Q.has('calm');          // 静止纸纹、不推镜：只给压 GIF 用（每帧整屏都变的话 GIF 压不下去）
@@ -65,6 +73,27 @@
     while (el.scrollWidth > width && size > min) { size -= 2; el.style.fontSize = size + 'px'; }
     if (el.scrollWidth > width) el.dataset.overflow = '1';
     return size;
+  }
+
+  /* 模板公共开头：色本、满版墨底、版头文字（#m1 左「段号 · 主题词」/ #m2 右「序号」） */
+  function setup(D) {
+    document.body.className = D.palette || 'pal-blue';
+    if (D.flood) document.getElementById('frame').classList.add('flood');
+    const [left = '', right = ''] = D.mast || [];
+    document.getElementById('m1').textContent = left;
+    document.getElementById('m2').textContent = right;
+  }
+
+  /* 荧光压条：盖在 [重点] 字的下半截。text 是 Riso.text() 排过的容器；没有 [ ] 时隐藏压条、返回 false
+     （先排版、后调用：要量字的位置） */
+  function markUnder(mark, text, { pad = 8, top = .52, height = .4 } = {}) {
+    mark = els(mark)[0];
+    const ems = els(text)[0].querySelectorAll('.em');
+    if (!ems.length) { mark.style.display = 'none'; return false; }
+    const a = box(ems[0]), b = box(ems[ems.length - 1]);
+    Object.assign(mark.style, { left: a.left - pad + 'px', width: b.right - a.left + pad * 2 + 'px',
+      top: a.top + a.height * top + 'px', height: a.height * height + 'px' });
+    return true;
   }
 
   /* 字形墨迹框：Oswald 等数字字体的字形会超出行框，排版要按“墨迹”对齐而不是按盒子。
@@ -258,6 +287,7 @@
 
     /* 网点地层：字幕床里的装饰，越往下越密；开场 0.6s 从 70% 长满 —— 第 0 帧就不是空的 */
     C.floor = (sel, { top = .0, power = 2.1, max = .62, cell = 16, grow = .6 } = {}) => {
+      Object.assign(els(sel)[0].style, { left: 0, top: ZONE.bottom + 'px', width: W + 'px', height: H - ZONE.bottom + 'px' });   // 铺满字幕床
       const draw = halftone(sel, {
         cell, density: (u, v, t) => {
           const g = .7 + .3 * clamp01(t / grow);
@@ -286,7 +316,7 @@
     const posterT = () => C.poster == null ? C.duration : C.poster;
     window.__riso = {
       ready,
-      meta: () => ({ id: C.id, duration: C.duration, fps: C.fps, width: 1080, height: 1920, poster: posterT() }),
+      meta: () => ({ id: C.id, duration: C.duration, fps: C.fps, width: W, height: H, poster: posterT(), zone: ZONE }),
       seek: t => { C.seek(t === 'end' ? posterT() : +t); return new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); },
       audit: () => audit(C),
     };
@@ -308,7 +338,6 @@
   }
 
   /* ── 版面自检（scripts/qa.mjs 调用）── */
-  const ZONE = { top: 168, bottom: 1330, left: 56, right: 1024, rail: { x: 930, y0: 880, y1: 1500 } };
   function lum([r, g, b]) {
     const f = c => { c /= 255; return c <= .03928 ? c / 12.92 : Math.pow((c + .055) / 1.055, 2.4); };
     return .2126 * f(r) + .7152 * f(g) + .0722 * f(b);
@@ -351,7 +380,7 @@
         const a = l.firstElementChild.getBoundingClientRect(), b = l.lastElementChild.getBoundingClientRect();
         return { left: a.left, right: b.right, top: Math.min(a.top, b.top), bottom: Math.max(a.bottom, b.bottom) };
       }) : [r];
-      if (parts.some(p => p.right > ZONE.rail.x && p.bottom > ZONE.rail.y0 && p.top < ZONE.rail.y1)) flag('warn', '压到短视频右侧按钮栏（x>930, y 880–1500）');
+      if (parts.some(p => p.right > ZONE.rail.x && p.bottom > ZONE.rail.y0 && p.top < ZONE.rail.y1)) flag('warn', `压到短视频右侧按钮栏（x>${ZONE.rail.x}, y ${ZONE.rail.y0}–${ZONE.rail.y1}）`);
       if (fs < 28) flag('error', `字号 ${fs}px < 28px，手机上读不清`);
       if (el.dataset.overflow) flag('error', 'fit() 缩到最小字号仍放不下：删字，不要硬塞');
       let col = rgb(cs.color);
@@ -380,5 +409,5 @@
     return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
   }
 
-  window.Riso = { comp, text, fit, inkBox, box, halftone, rng };
+  window.Riso = { comp, setup, text, fit, markUnder, inkBox, box, halftone, rng, ZONE };
 })();

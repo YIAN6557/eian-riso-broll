@@ -1,7 +1,7 @@
 ---
 name: eian-riso-broll
 description: 孔版双色（Riso）风格的信息 B-roll 动画。给一份口播逐字稿（可附 SRT 字幕），挑出适合做成信息动画的段落，套用 10 个现成模板（数字冲击 / 流程 / 收敛 / 前后对比 / 链接密度 / 金句 / 多选一 / 误区翻转 / 章节卡 / 截图锚点），先出静态样帧确认，再渲染 1080×1920 竖屏 mp4（无音轨；可出透明底 ProRes）。用户说「Riso 动画」「孔版风 B-roll」「eian-riso-broll」「逐字稿做信息动画」「口播配信息动画」「信息图 B-roll」，或给出逐字稿、想要高对比杂志感的竖屏信息动画时，使用此 skill。纯 HTML/CSS/GSAP 本机渲染，不调用图片生成模型；只做无角色的信息动画 —— 情绪独白、隐喻、软件操作演示不做，建议归实拍 / 角色动画 / 录屏。
-compatibility: Node ≥ 22、Chrome 或 Chromium、ffmpeg/ffprobe。字体随 skill 分发（思源宋体 / 思源黑体 / Oswald / JetBrains Mono），macOS、Linux、Windows 渲出来一样。首次使用先跑 scripts/check_setup.sh。
+compatibility: Node ≥ 22、Chrome 或 Chromium、ffmpeg/ffprobe。字体随 skill 分发（思源宋体 / 思源黑体 / Oswald / JetBrains Mono），macOS、Linux、Windows 渲出来一样。首次使用先跑 node scripts/check_setup.mjs。
 ---
 
 # Riso B-roll · 孔版双色信息动画
@@ -50,7 +50,7 @@ Gate 3  成片（mp4 + QA）                               → 交付
 ### Gate 2 · 样帧
 
 ```bash
-P=$(scripts/new_project.sh 2026-10-07-主题)          # 建项目，assets 整份拷入
+P=$(node scripts/new_project.mjs 2026-10-07-主题)    # 建项目，assets 整份拷入
 cp templates/number.html $P/compositions/01-xxx.html  # 每条一个文件，按 01- 02- 编号
 # 只改 DATA → 渲样帧 → 质检
 node scripts/render.mjs $P/compositions/*.html --still   # plates/*.png + plates/sheet.jpg

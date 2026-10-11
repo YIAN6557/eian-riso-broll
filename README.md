@@ -87,6 +87,7 @@ scripts/
 ├── new_project.sh       新建自包含项目
 ├── check_setup.sh       环境自检
 └── lib/chrome.mjs       headless Chrome 驱动（Node 自带 WebSocket）
+tests/smoke.mjs          一键自测：全部模板 → 样帧 + 成片 + 质检 + 时长脚本
 evals/evals.json         行为评测
 demo/                    GIF 与末帧一览
 ```

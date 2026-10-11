@@ -2,7 +2,7 @@
 
 ## 环境
 
-`scripts/check_setup.sh` 一次查完：Node ≥ 22（渲染器用 Node 自带的 WebSocket 驱动 Chrome，**零 npm 依赖**）、Chrome/Chromium（找不到时设 `CHROME=<路径>`）、ffmpeg/ffprobe、字体。
+`scripts/check_setup.sh` 一次查完：Node ≥ 22（渲染器用 Node 自带的 WebSocket 驱动 Chrome，**零 npm 依赖**）、Chrome/Chromium（会真的启动一次；找不到时设 `CHROME=<路径>`，也会自动找 Playwright 下载的 Chromium）、ffmpeg/ffprobe、字体。
 
 非 macOS：没有宋体 Black / DIN Condensed 时会回退到 Noto Serif SC / Oswald，能渲但气质会变——装思源宋体 Heavy 和 Oswald 最接近。
 
@@ -36,6 +36,14 @@ node $S/timing.mjs --srt 口播.srt "某句台词"         # 精确入点 / 出�
 浏览器里直接打开 composition 可以预览：自动循环播放；`?t=end` 或 `?t=2.4` 定格到某一刻。
 
 速度参考（M 系列 Mac）：样帧 ~2 秒一张；成片 5 秒一条约 20 秒。
+
+改过 `assets/`、`scripts/` 或模板之后，跑一遍自测：
+
+```bash
+node tests/smoke.mjs                 # 全部模板：样帧 → 成片（--draft）→ 质检 → 时长脚本；失败时退出码 1
+node tests/smoke.mjs --full --out ~/Desktop/riso-review   # 正式码率，产物留在指定目录里看效果
+node tests/smoke.mjs number quote    # 只测指定模板
+```
 
 ## 渲染器怎么工作
 
@@ -87,3 +95,4 @@ QA 查不了的，自己看：
 | 页面脚本报错 | 渲染器会把页面的 console error 原样打出来；浏览器打开 composition 看控制台 |
 | `fit() 缩到最小字号仍放不下` | 删字。不要调小 min、不要改 CSS |
 | 渲染卡住 / Chrome 启动超时 | 有残留的 headless Chrome：`pkill -f riso-chrome` |
+| Chrome 启动失败 | 报错里会带 Chrome 自己的最后几行输出。root 身份（Docker / CI）下会自动加 `--no-sandbox` |

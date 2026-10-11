@@ -66,13 +66,20 @@ Riso.comp({ duration: DATA.duration, seed: 77 }, C => {
   });
   if (DATA.verdict && DATA.verdict.n) {
     vn.textContent = DATA.verdict.n;
-    const last = Riso.box(slips[n - 1]).bottom;
-    vn.style.top = vn.offsetTop + (last + 70 - Riso.inkBox(vn).top) + 'px';
-    const vi = Riso.inkBox(vn);
     Riso.text(vt, DATA.verdict.text);
-    Riso.fit(vt, { width: 920 - vi.right - 28, max: 88, min: 56 });     // 行尾停在 x 920，避开右侧按钮栏
-    vt.style.left = vi.right + 28 + 'px';
-    vt.style.top = vi.bottom - vt.offsetHeight * .92 + 'px';
+    const last = Riso.box(slips[n - 1]).bottom;
+    // 数字和结论排在同一行，行尾停在 x 920（避开右侧按钮栏）。放不下时先把数字从 250 缩到 160，仍放不下再交给 QA
+    for (let size = 250; ; size -= 10) {
+      vn.style.fontSize = size + 'px';
+      vn.style.top = '0px';
+      vn.style.top = (last + 70 - Riso.inkBox(vn).top) + 'px';
+      const vi = Riso.inkBox(vn);
+      delete vt.dataset.overflow;
+      Riso.fit(vt, { width: 920 - vi.right - 28, max: 88, min: 56 });
+      vt.style.left = vi.right + 28 + 'px';
+      vt.style.top = vi.bottom - vt.offsetHeight * .92 + 'px';
+      if (!vt.dataset.overflow || size <= 160) break;
+    }
   } else if (DATA.verdict) {
     vn.style.display = 'none';
     Riso.text(vt, DATA.verdict.text);

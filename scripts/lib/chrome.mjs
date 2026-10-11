@@ -1,22 +1,39 @@
 // 极简 headless Chrome 驱动（CDP over WebSocket，Node ≥ 22 自带 WebSocket，零依赖）
 import { spawn, execFileSync } from 'node:child_process';
-import { mkdtempSync, rmSync, existsSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { mkdtempSync, rmSync, existsSync, readdirSync } from 'node:fs';
+import { tmpdir, homedir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 export function findChrome() {
+  if (process.env.CHROME) {
+    if (!existsSync(process.env.CHROME)) throw new Error('环境变量 CHROME 指向的文件不存在：' + process.env.CHROME);
+    return process.env.CHROME;
+  }
   const cands = [
-    process.env.CHROME,
     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
     '/Applications/Chromium.app/Contents/MacOS/Chromium',
     ...['google-chrome', 'google-chrome-stable', 'chromium', 'chromium-browser'].map(n => {
-      try { return execFileSync('which', [n], { encoding: 'utf8' }).trim(); } catch { return null; }
+      try { return execFileSync('which', [n], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch { return null; }
     }),
+    ...playwrightChromes(),
   ];
   const hit = cands.find(c => c && existsSync(c));
   if (!hit) throw new Error('找不到 Chrome / Chromium。设置环境变量 CHROME=<可执行文件路径>');
   return hit;
+}
+
+// Playwright 下载过的 Chromium（装过 Playwright 的机器、CI 镜像里常见），版本新的优先
+function playwrightChromes() {
+  const roots = [process.env.PLAYWRIGHT_BROWSERS_PATH, join(homedir(), '.cache/ms-playwright'), join(homedir(), 'Library/Caches/ms-playwright')];
+  const bins = ['chrome-linux64/chrome', 'chrome-linux/chrome', 'chrome-mac-arm64/Chromium.app/Contents/MacOS/Chromium', 'chrome-mac/Chromium.app/Contents/MacOS/Chromium'];
+  const out = [];
+  for (const r of roots) {
+    let dirs = [];
+    try { dirs = readdirSync(r).filter(d => /^chromium-\d+$/.test(d)).sort((a, b) => b.split('-')[1] - a.split('-')[1]); } catch { continue; }
+    for (const d of dirs) for (const b of bins) out.push(join(r, d, b));
+  }
+  return out;
 }
 
 export async function launch({ width = 1080, height = 1920 } = {}) {
@@ -26,19 +43,26 @@ export async function launch({ width = 1080, height = 1920 } = {}) {
     '--no-first-run', '--no-default-browser-check', '--hide-scrollbars', '--mute-audio',
     '--force-device-scale-factor=1', `--window-size=${width},${height}`,
     '--force-color-profile=srgb', '--allow-file-access-from-files', '--disable-background-timer-throttling',
-    '--disable-renderer-backgrounding', 'about:blank',
+    '--disable-renderer-backgrounding',
+    // root 身份（Docker / CI / 云端容器）下 Chrome 拒绝在沙箱里启动；普通用户不加
+    ...(process.getuid?.() === 0 ? ['--no-sandbox'] : []),
+    'about:blank',
   ], { stdio: ['ignore', 'ignore', 'pipe'] });
 
+  // 启动失败时把 Chrome 自己的报错带出来，否则只剩一个退出码
+  let buf = '';
+  const tail = () => buf.trim().split('\n').slice(-8).join('\n');
   const wsUrl = await new Promise((res, rej) => {
-    let buf = '';
-    const to = setTimeout(() => rej(new Error('Chrome 启动超时')), 20000);
+    const to = setTimeout(() => rej(new Error('Chrome 启动超时（20s）\n' + tail())), 20000);
+    proc.on('error', e => { clearTimeout(to); rej(new Error('Chrome 无法启动：' + e.message)); });
     proc.stderr.on('data', d => {
       buf += d;
       const m = buf.match(/DevTools listening on (ws:\/\/\S+)/);
       if (m) { clearTimeout(to); res(m[1]); }
     });
-    proc.on('exit', c => rej(new Error('Chrome 退出 code=' + c)));
+    proc.on('exit', c => { clearTimeout(to); rej(new Error(`Chrome 退出 code=${c}\n${tail()}`)); });
   });
+  proc.stderr.resume();
 
   const ws = new WebSocket(wsUrl);
   await new Promise((r, j) => { ws.onopen = r; ws.onerror = j; });

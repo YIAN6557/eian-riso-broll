@@ -13,9 +13,10 @@ if command -v node >/dev/null 2>&1; then
   [ "$M" -ge 22 ] && ok "node $(node -v)" || bad "node $(node -v) 太旧：需要 ≥ 22（渲染器用 Node 自带的 WebSocket）"
 else bad "没有 node（需要 ≥ 22）"; fi
 
-if node -e "import('$SKILL/scripts/lib/chrome.mjs').then(m=>console.log(m.findChrome()))" >/tmp/riso-chrome.txt 2>/dev/null; then
-  ok "Chrome: $(cat /tmp/riso-chrome.txt)"
-else bad "找不到 Chrome/Chromium（可用环境变量 CHROME=<路径> 指定）"; fi
+# 不只找到路径，还真的启动一次：沙箱、缺库这类问题只有启动时才会暴露
+if CH=$(node -e "import('$SKILL/scripts/lib/chrome.mjs').then(async m=>{const p=m.findChrome();const c=await m.launch();await c.close();console.log(p)}).catch(e=>{console.error(e.message);process.exit(1)})" 2>&1); then
+  ok "Chrome: $CH"
+else bad "Chrome 不可用（可用环境变量 CHROME=<路径> 指定）："; echo "$CH" | sed 's/^/       /'; fi
 
 command -v ffmpeg  >/dev/null && ok "ffmpeg $(ffmpeg -version | head -1 | awk '{print $3}')" || bad "没有 ffmpeg"
 command -v ffprobe >/dev/null && ok "ffprobe" || bad "没有 ffprobe"

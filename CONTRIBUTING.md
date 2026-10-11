@@ -66,6 +66,12 @@ node tests/smoke.mjs number quote                       # 只测指定模板
 
 `shot` 模板会额外派生一条带示例截图的 `shot-image`，用来检查截图的双色调效果。
 
+每次推送到 `main` 或提 pull request，GitHub Actions（`.github/workflows/ci.yml`）都会自动跑：Ubuntu 上全部模板，macOS 和 Windows 上抽测两个模板。
+
+## 发版
+
+改动记进 [CHANGELOG.md](CHANGELOG.md)，按[语义化版本](https://semver.org/lang/zh-CN/)定版本号，再打 git 标签（如 `v1.1.0`）。
+
 除了自测，还要自己看两样 QA 查不出来的东西：
 
 - `--at 0`：第 0 帧是不是干净（只有纸、纸纹和底部网点地层）。
@@ -96,7 +102,7 @@ python3 tools/build_fonts.py <上游字体目录>     # 需要哪些上游文件
 
 ## 贡献的授权
 
-本仓库采用 [Eian 个人非商业使用许可 1.0](LICENSE)，商业使用另行书面授权。向本仓库提交代码、文档或其他内容（issue 里的补丁、pull request 等），即表示你确认有权提交这些内容，并同意 YIAN6557 可以按本仓库的个人非商业使用许可和商业授权条款使用、修改、再授权这些内容。
+本仓库采用 [Eian 个人非商业使用许可 1.0](LICENSE)，商业使用另行书面授权。向本仓库提交代码、文档或其他内容（issue 里的补丁、pull request 等），即表示你确认有权提交这些内容，并同意 Eian 可以按本仓库的个人非商业使用许可和商业授权条款使用、修改、再授权这些内容。
 
 By contributing, you confirm you have the right to submit your contribution and agree that the rights holder may use, modify and license it under both the personal use license and commercial licenses.
 

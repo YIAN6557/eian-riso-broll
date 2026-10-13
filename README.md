@@ -1,10 +1,12 @@
 # eian-riso-broll
 
-**Risograph-style info animations for talking-head videos · a Claude Code skill**
+**Risograph-style info animations for talking-head videos · an AI coding-assistant workflow**
+
+Works with Claude Code, Codex, Cursor, Gemini CLI, and other agents.
 
 [简体中文](README.zh-CN.md) · English
 
-Hand Claude the script of your talking-head video. It picks the lines worth visualizing and turns them into vertical info animations (1080×1920 mp4) in a two-color risograph print style, ready to drop into your editor.
+Hand your AI assistant the script of your talking-head video. It picks the lines worth visualizing and turns them into vertical info animations (1080×1920 mp4) in a two-color risograph print style, ready to drop into your editor.
 
 | Big number | Many → few | Before / after | Key quote |
 |:---:|:---:|:---:|:---:|
@@ -38,36 +40,48 @@ The typography is designed for Chinese (serif display type, Chinese line limits)
 
 You'll need:
 
-- [Claude Code](https://claude.com/claude-code)
+- An AI coding assistant: [Claude Code](https://claude.com/claude-code), Codex, Cursor, Gemini CLI, etc.
 - [Node.js](https://nodejs.org) 22 or newer
 - Chrome (Edge or Chromium also work)
 - [ffmpeg](https://ffmpeg.org) (on macOS: `brew install node ffmpeg`)
 
-Put the skill in Claude Code's skills folder and run the setup check:
+**Claude Code**: put the skill in the skills folder and run the setup check:
 
 ```bash
 git clone https://github.com/YIAN6557/eian-riso-broll.git ~/.claude/skills/eian-riso-broll
 node ~/.claude/skills/eian-riso-broll/scripts/check_setup.mjs
 ```
 
-When it says everything passed, you're ready. On Windows, use `%USERPROFILE%\.claude\skills` instead of `~/.claude/skills`.
+Claude picks it up from `SKILL.md` and triggers from any project once you ask. On Windows, use `%USERPROFILE%\.claude\skills` instead of `~/.claude/skills`.
+
+**Codex / Cursor / Gemini CLI and others**: clone the repo anywhere and work inside it:
+
+```bash
+git clone https://github.com/YIAN6557/eian-riso-broll.git
+cd eian-riso-broll
+node scripts/check_setup.mjs
+```
+
+The assistant reads [`AGENTS.md`](AGENTS.md) at the repo root as its operating guide. To use it inside your own project, drop this repo into a subfolder, or add `AGENTS.md`'s content to your project's `AGENTS.md`.
+
+When it says everything passed, you're ready.
 
 ## How to use it
 
-Just ask Claude, for example:
+Just ask your AI assistant, for example:
 
 - **A whole episode**: "Use eian-riso-broll to make info animations for this script: … (paste the script)"
 - **A single line**: "Turn this line into a Riso animation and render it straight away: 'Making one infographic used to take 40 minutes; now it takes 2.'"
 - **Matched to your voice**: "Here's my subtitle file talk.srt. Animate the third paragraph and match its length to the voiceover."
 - **For overlaying**: "Give me a transparent-background version of the last one."
 
-For a whole episode, Claude works in three steps and stops for your OK after each:
+For a whole episode, the assistant works in three steps and stops for your OK after each:
 
 1. **Storyboard**: which line gets which visual, the exact on-screen text and the duration. This is the cheapest moment to drop or swap shots.
 2. **Stills**: the last frame of every animation, laid out on one sheet. Fix layout or wording here.
 3. **Final render**: the mp4s, checked again for length and size.
 
-If you give it a single line or say "render it straight away", Claude merges the steps, but never skips the checks.
+If you give it a single line or say "render it straight away", the assistant merges the steps, but never skips the checks.
 
 Finished files go to `~/eian-riso-broll-projects/<project name>/renders/`, one mp4 per animation.
 

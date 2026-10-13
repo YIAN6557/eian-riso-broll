@@ -12,7 +12,8 @@
 
 | 文件 | 负责 |
 |---|---|
-| `SKILL.md` | 入口：什么时候用、三道门流程、不可违反的规则、常见坑 |
+| `SKILL.md` | Claude Code 的入口：什么时候用、三道门流程、不可违反的规则、常见坑 |
+| `AGENTS.md` | Codex / Cursor / Gemini CLI 等的入口，指向 `SKILL.md` 和 `references/` |
 | `references/copy.md` | 选段与文案：哪些段落值得做、怎么从原话里摘屏幕字、时长 |
 | `references/templates.md` | 10 个模板的用途、画面故事、DATA 字段、选择树 |
 | `references/style.md` | 视觉系统：纸、两墨、叠印、网点、色本、版面、字体、禁区 |

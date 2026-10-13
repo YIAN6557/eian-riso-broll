@@ -1,10 +1,12 @@
 # eian-riso-broll
 
-**孔版印刷风格的口播信息动画 · 一个 Claude Code skill**
+**孔版印刷风格的口播信息动画 · AI 编码助手工作流**
+
+支持 Claude Code、Codex、Cursor、Gemini CLI 等。
 
 简体中文 · [English](README.md)
 
-把口播逐字稿交给 Claude，它会挑出值得配画面的句子，做成孔版双色风格的竖屏信息动画（1080×1920 mp4），拖进剪辑软件就能用。
+把口播逐字稿交给 AI 助手，它会挑出值得配画面的句子，做成孔版双色风格的竖屏信息动画（1080×1920 mp4），拖进剪辑软件就能用。
 
 | 数字冲击 | 收敛归类 | 前后对比 | 金句 |
 |:---:|:---:|:---:|:---:|
@@ -36,36 +38,48 @@
 
 需要先装好这几样：
 
-- [Claude Code](https://claude.com/claude-code)
+- 一个 AI 编码助手：[Claude Code](https://claude.com/claude-code)、Codex、Cursor、Gemini CLI 等
 - [Node.js](https://nodejs.org) 22 或更新
 - Chrome（Edge 或 Chromium 也可以）
 - [ffmpeg](https://ffmpeg.org)（macOS 可以用 Homebrew：`brew install node ffmpeg`）
 
-然后把 skill 放进 Claude Code 的 skills 目录，跑一次环境自检：
+**Claude Code**：把 skill 放进 skills 目录，跑一次环境自检：
 
 ```bash
 git clone https://github.com/YIAN6557/eian-riso-broll.git ~/.claude/skills/eian-riso-broll
 node ~/.claude/skills/eian-riso-broll/scripts/check_setup.mjs
 ```
 
-看到“全部通过”就可以用了。Windows 上把 `~/.claude/skills` 换成 `%USERPROFILE%\.claude\skills`。
+Claude 靠 `SKILL.md` 自动识别，之后在任意项目里说句话就能触发。Windows 上把 `~/.claude/skills` 换成 `%USERPROFILE%\.claude\skills`。
+
+**Codex / Cursor / Gemini CLI 等**：把仓库克隆到任意位置，在这个目录里工作：
+
+```bash
+git clone https://github.com/YIAN6557/eian-riso-broll.git
+cd eian-riso-broll
+node scripts/check_setup.mjs
+```
+
+助手会自动读取根目录的 [`AGENTS.md`](AGENTS.md) 作为操作指南。想在你自己的项目里用，把这个仓库放进项目的子目录，或把 `AGENTS.md` 的内容加进你项目的 `AGENTS.md`。
+
+看到“全部通过”就可以用了。
 
 ## 怎么用
 
-直接跟 Claude 说就行，比如：
+直接跟你的 AI 助手说就行，比如：
 
 - **整期视频**：「用 eian-riso-broll 给这期逐字稿做信息动画：……（贴上逐字稿）」
 - **只做一句**：「把这句做成 Riso 动画，直接出片：『做一张信息图，以前要 40 分钟，现在 2 分钟』」
 - **对准口播时长**：「这是字幕文件 口播.srt，帮我把第 3 段做成动画，时长和口播对上」
 - **叠在人像上**：「上一条给我一个透明背景的版本」
 
-做整期视频时，Claude 会分三步走，每一步都停下来等你确认：
+做整期视频时，助手会分三步走，每一步都停下来等你确认：
 
 1. **分镜表**：哪句话配什么画面、屏幕上写什么字、多长时间。删哪条、换哪条，在这一步说最省事。
 2. **样帧**：每条动画的最后一帧拼成一张总览图给你看。构图、文字不满意，在这一步改。
 3. **成片**：渲染出 mp4，再自动检查一遍时长和尺寸。
 
-如果只给一句话，或者说了“直接出片”，Claude 会合并步骤直接做，但检查一步都不会少。
+如果只给一句话，或者说了“直接出片”，助手会合并步骤直接做，但检查一步都不会少。
 
 成片默认放在 `~/eian-riso-broll-projects/<项目名>/renders/`，每条一个 mp4。
 

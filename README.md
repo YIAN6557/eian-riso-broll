@@ -38,23 +38,27 @@ The typography is designed for Chinese (serif display type, Chinese line limits)
 
 ## Install
 
-You'll need:
+First install [Node.js](https://nodejs.org) 22+, Chrome (Edge or Chromium also work), and [ffmpeg](https://ffmpeg.org) (on macOS: `brew install node ffmpeg`).
 
-- An AI coding assistant: [Claude Code](https://claude.com/claude-code), Codex, Cursor, Gemini CLI, etc.
-- [Node.js](https://nodejs.org) 22 or newer
-- Chrome (Edge or Chromium also work)
-- [ffmpeg](https://ffmpeg.org) (on macOS: `brew install node ffmpeg`)
+Then **paste the message below to your AI coding assistant** (Claude Code, Codex, Cursor, Gemini CLI — any of them), and it will install itself:
 
-**Claude Code**: put the skill in the skills folder and run the setup check:
+> Install the eian-riso-broll skill for me. Repo: https://github.com/YIAN6557/eian-riso-broll . Clone it to wherever you load skills or rules (if you're Claude Code, use `~/.claude/skills/eian-riso-broll`; otherwise clone it to a suitable working directory — its `AGENTS.md` at the repo root is the guide for you). Then check that Node.js 22+, Chrome and ffmpeg are installed, run its `scripts/check_setup.mjs`, and once everything passes, tell me how to use it.
+
+When it says everything passed, you're ready.
+
+<details>
+<summary>Manual install (click to expand)</summary>
+
+**Claude Code**:
 
 ```bash
 git clone https://github.com/YIAN6557/eian-riso-broll.git ~/.claude/skills/eian-riso-broll
 node ~/.claude/skills/eian-riso-broll/scripts/check_setup.mjs
 ```
 
-Claude picks it up from `SKILL.md` and triggers from any project once you ask. On Windows, use `%USERPROFILE%\.claude\skills` instead of `~/.claude/skills`.
+On Windows, use `%USERPROFILE%\.claude\skills` instead of `~/.claude/skills`. Claude picks it up from `SKILL.md` and triggers from any project once you ask.
 
-**Codex / Cursor / Gemini CLI and others**: clone the repo anywhere and work inside it:
+**Codex / Cursor / Gemini CLI and others**: clone it anywhere and work inside that folder; the assistant reads [`AGENTS.md`](AGENTS.md) at the repo root:
 
 ```bash
 git clone https://github.com/YIAN6557/eian-riso-broll.git
@@ -62,9 +66,7 @@ cd eian-riso-broll
 node scripts/check_setup.mjs
 ```
 
-The assistant reads [`AGENTS.md`](AGENTS.md) at the repo root as its operating guide. To use it inside your own project, drop this repo into a subfolder, or add `AGENTS.md`'s content to your project's `AGENTS.md`.
-
-When it says everything passed, you're ready.
+</details>
 
 ## How to use it
 

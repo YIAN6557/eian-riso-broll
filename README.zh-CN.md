@@ -36,23 +36,27 @@
 
 ## 安装
 
-需要先装好这几样：
+先装好 [Node.js](https://nodejs.org) 22+、Chrome（Edge 或 Chromium 也行）和 [ffmpeg](https://ffmpeg.org)（macOS：`brew install node ffmpeg`）。
 
-- 一个 AI 编码助手：[Claude Code](https://claude.com/claude-code)、Codex、Cursor、Gemini CLI 等
-- [Node.js](https://nodejs.org) 22 或更新
-- Chrome（Edge 或 Chromium 也可以）
-- [ffmpeg](https://ffmpeg.org)（macOS 可以用 Homebrew：`brew install node ffmpeg`）
+然后把下面这段话**复制发给你的 AI 编码助手**（Claude Code、Codex、Cursor、Gemini CLI 等都行），它会自己下载安装：
 
-**Claude Code**：把 skill 放进 skills 目录，跑一次环境自检：
+> 帮我安装 eian-riso-broll 这个 skill，仓库地址 https://github.com/YIAN6557/eian-riso-broll 。请把它克隆到你加载 skill 或规则的正确位置（如果你是 Claude Code，放到 `~/.claude/skills/eian-riso-broll`；其他助手克隆到合适的工作目录即可，它根目录的 `AGENTS.md` 就是给你看的说明）。然后检查本机是否装了 Node.js 22+、Chrome 和 ffmpeg，运行它的 `scripts/check_setup.mjs` 做自检，全部通过后告诉我怎么用。
+
+看到“全部通过”就可以用了。
+
+<details>
+<summary>也可以手动安装（点开）</summary>
+
+**Claude Code**：
 
 ```bash
 git clone https://github.com/YIAN6557/eian-riso-broll.git ~/.claude/skills/eian-riso-broll
 node ~/.claude/skills/eian-riso-broll/scripts/check_setup.mjs
 ```
 
-Claude 靠 `SKILL.md` 自动识别，之后在任意项目里说句话就能触发。Windows 上把 `~/.claude/skills` 换成 `%USERPROFILE%\.claude\skills`。
+Windows 上把 `~/.claude/skills` 换成 `%USERPROFILE%\.claude\skills`。Claude 靠 `SKILL.md` 自动识别，之后在任意项目里说句话就能触发。
 
-**Codex / Cursor / Gemini CLI 等**：把仓库克隆到任意位置，在这个目录里工作：
+**Codex / Cursor / Gemini CLI 等**：克隆到任意位置并在该目录工作，助手会自动读取根目录的 [`AGENTS.md`](AGENTS.md)：
 
 ```bash
 git clone https://github.com/YIAN6557/eian-riso-broll.git
@@ -60,9 +64,7 @@ cd eian-riso-broll
 node scripts/check_setup.mjs
 ```
 
-助手会自动读取根目录的 [`AGENTS.md`](AGENTS.md) 作为操作指南。想在你自己的项目里用，把这个仓库放进项目的子目录，或把 `AGENTS.md` 的内容加进你项目的 `AGENTS.md`。
-
-看到“全部通过”就可以用了。
+</details>
 
 ## 怎么用
 

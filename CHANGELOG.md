@@ -2,6 +2,15 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循[语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [Unreleased]
+
+### 修复
+
+- 同一帧文字重复：版头主题词常常和标题、正文是同一个词（如版头「年终奖」、标题「年终奖」、选项又是「年终奖」），字幕短的时候尤其明显。
+  - `references/copy.md` 新增「同一帧不重复」规则：版头写更上一层的分类，标题写总称、不能是选项之一。
+  - `qa.mjs` 新增重复检查，命中即 error，在样帧阶段拦下。
+  - 默认模板里的两处重复一并修正：`focus` 版头「色本」→「风格」，`shot` 版头「分镜」→「原件」。
+
 ## [1.0.0] - 2026-10-11
 
 首个公开版本。First public release.

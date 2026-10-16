@@ -400,6 +400,23 @@
         if (share > .03) out.push(['error', name(A) + ' × ' + name(B), `文字互相压住 ${(share * 100) | 0}%（有意叠印请给其中一个加 data-overprint）`, [Math.max(a.left, b.left) | 0, Math.max(a.top, b.top) | 0, ix | 0, iy | 0]]);
       }
     }
+    // 重复：同一个词在一帧里出现两次，观众一眼就看出是“套模板”。版头主题词不能出现在正文里，正文两块之间也不能互相包含
+    // （只比汉字和字母，去掉数字、标点；2 字以上才算）
+    const words = s => s.replace(/[^\p{L}]/gu, '');
+    const m1 = document.getElementById('m1');
+    const topic = m1 && visible(m1) ? words(m1.textContent.split('·').pop()) : '';
+    const body = texts.filter(el => !el.closest('.mast')).map(el => ({ el, w: words(el.textContent) })).filter(b => b.w.length >= 2);
+    const at = el => { const r = rectOf(el); return [r.left | 0, r.top | 0, r.width | 0, r.height | 0]; };
+    if (topic.length >= 2) for (const b of body)
+      if (b.w.includes(topic) || topic.includes(b.w))
+        out.push(['error', '#m1 × ' + name(b.el), `版头主题词“${topic}”和正文重复：版头写更上一层的分类，或留空`, at(b.el)]);
+    for (let i = 0; i < body.length; i++) for (let j = i + 1; j < body.length; j++) {
+      const A = body[i], B = body[j];
+      if (A.el.contains(B.el) || B.el.contains(A.el)) continue;
+      if (A.el.className === B.el.className) continue;          // 同类并列元素（前后对比的两个单位“分钟”、几张纸条）本来就该对称
+      const [s, l] = A.w.length <= B.w.length ? [A, B] : [B, A];
+      if (l.w.includes(s.w)) out.push(['error', name(A.el) + ' × ' + name(B.el), `“${s.w}”在同一帧出现两次：标题写总称，不要和选项 / 正文同词`, at(s.el)]);
+    }
     return { id: C.id, texts: texts.length, issues: out };
   }
   function hex(s) {

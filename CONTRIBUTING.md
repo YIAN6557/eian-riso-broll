@@ -49,6 +49,7 @@
 | 文件 | 负责 |
 |---|---|
 | `tests/smoke.mjs` | 一键自测：全部模板 → 样帧 → 成片 → 质检 → 时长脚本 |
+| `tests/regression.mjs` | 浏览器回归：小数计数、真实比例、零值、六步流程和图片加载 |
 | `evals/evals.json` | 行为评测：Claude 用这个 skill 时该怎么做 |
 | `examples/` | 虚构示例逐字稿 + 分镜表 + 字幕；模板默认 DATA 和 demo 都来自它 |
 | `tools/build_demo.mjs` | 重新生成 `demo/` |
@@ -60,6 +61,7 @@
 改过 `assets/`、`scripts/` 或模板之后跑一遍：
 
 ```bash
+node --test tests/regression.mjs                       # DATA 边界与图片加载，不编码视频
 node tests/smoke.mjs                                    # 全部模板：样帧 → 成片（--draft）→ 质检 → 时长脚本；失败时退出码 1
 node tests/smoke.mjs --full --out ~/Desktop/riso-review # 正式码率，产物留在指定目录里看效果
 node tests/smoke.mjs number quote                       # 只测指定模板

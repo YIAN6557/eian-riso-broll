@@ -54,7 +54,7 @@ Riso.comp({ duration: DATA.duration, seed: 44 }, C => {
     u.style.top = (v2.bottom - y - u.offsetHeight * .86) + 'px';     // 单位坐在数字基线上
     const by = v2.bottom - y + 36;
     bar.style.top = track.style.top = by + 'px';
-    bar.style.width = Math.max(14, W * d.base / max) + 'px';
+    bar.style.width = (max > 0 ? W * d.base / max : 0) + 'px';
     y += by + 64 + 72;
     return { r, lb, v, u, track, bar, d };
   });
@@ -70,7 +70,10 @@ Riso.comp({ duration: DATA.duration, seed: 44 }, C => {
   C.rise(A.lb, .45);
   C.roll(A.track, .55, { dur: .4 });
   C.tl.fromTo(A.bar, { scaleX: 0 }, { scaleX: 1, duration: 1.35, ease: 'none', immediateRender: true }, .7);
-  C.count(A.v, .7, { to: A.d.value, dur: 1.35, ease: 'none', fmt: v => Math.round(v) });
+  const [coefficient, exponent = '0'] = String(A.d.value).split('e');
+  const decimals = Math.max(0, (coefficient.split('.')[1] || '').length - Number(exponent));
+  C.count(A.v, .7, { to: A.d.value, dur: 1.35, ease: 'none',
+    fmt: v => v === A.d.value ? String(A.d.value) : String(Number(v.toFixed(Math.min(100, decimals)))) });
   C.rise(A.u, .9);
   // 现在：快 —— 一下到位，盖章
   C.rise(B.lb, 2.25);

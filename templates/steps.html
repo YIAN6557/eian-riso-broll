@@ -58,7 +58,9 @@ Riso.comp({ duration: DATA.duration, seed: 22 }, C => {
       <div class="ix num b t" data-overprint>${String(i + 1).padStart(2, '0')}</div><div class="name hd a t"></div>`;
     rows.appendChild(r);
     const ix = r.querySelector('.ix'), nm = r.querySelector('.name');
-    ix.style.fontSize = Math.min(150, rowh * .78) + 'px';
+    const ixSize = Math.min(150, rowh * .78);
+    ix.style.fontSize = ixSize + 'px';
+    if (ixSize < 100) ix.classList.replace('b', 'a');
     Riso.text(nm, i === key ? `[${s}]` : s);
     Riso.fit(nm, { width: 716, max: nameSize, min: 56 });
     const mid = rowh / 2 + 6;

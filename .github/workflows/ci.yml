@@ -26,6 +26,8 @@ jobs:
         run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Check environment
         run: node scripts/check_setup.mjs
+      - name: Browser regressions
+        run: node --test tests/regression.mjs
       - name: Smoke test
         run: node tests/smoke.mjs --out "$RUNNER_TEMP/smoke"
       - name: Upload stills and QA overlays
@@ -60,5 +62,7 @@ jobs:
         run: choco install ffmpeg --yes --no-progress
       - name: Check environment
         run: node scripts/check_setup.mjs
+      - name: Browser regressions
+        run: node --test tests/regression.mjs
       - name: Smoke test
         run: node tests/smoke.mjs number quote --out "${{ runner.temp }}/smoke"

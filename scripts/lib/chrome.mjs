@@ -116,6 +116,10 @@ export async function launch({ width = 1080, height = 1920 } = {}) {
     const ok = await evaluate(`new Promise(r => { const w = () => window.__riso ? r(true) : setTimeout(w, 30); w(); setTimeout(() => r(false), 8000); })`);
     if (!ok) throw new Error('页面没有调用 Riso.comp()（没有 window.__riso）\n' + errors.join('\n'));
     await evaluate('window.__riso.ready');
+    await evaluate(`Promise.all([...document.images].map(async img => {
+      try { await img.decode(); }
+      catch { throw new Error('图片加载失败：' + img.getAttribute('src')); }
+    }))`);
     if (errors.length) throw new Error('页面脚本报错：\n' + errors.join('\n'));
 
     return {
